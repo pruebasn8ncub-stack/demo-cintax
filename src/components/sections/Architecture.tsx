@@ -98,7 +98,7 @@ export default function Architecture() {
           <div
             className="grid items-center gap-y-3"
             style={{
-              gridTemplateColumns: "220px 100px 180px 1fr 300px",
+              gridTemplateColumns: "200px 1fr 200px 1fr 300px",
               gridTemplateRows: "auto auto auto",
             }}
           >

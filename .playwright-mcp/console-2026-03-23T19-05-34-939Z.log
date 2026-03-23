@@ -1,0 +1,2 @@
+[    5253ms] [WARNING] Note: Some companies are required to obtain a license to use Remotion. See: https://remotion.dev/license
+Pass the `acknowledgeRemotionLicense` prop to `<Player />` function to make this message disappear. @ https://demo-cintax.vercel.app/_next/static/chunks/08vh~5jcyg1cj.js:2
