@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CintaxAI Demo — Opciones de Diseño</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #e0e0e0; }
+
+  .header {
+    text-align: center; padding: 40px 20px 20px;
+    border-bottom: 1px solid #222;
+  }
+  .header h1 { font-family: 'Orbitron', monospace; font-size: 28px; margin-bottom: 8px; }
+  .header p { color: #888; font-size: 14px; }
+
+  .section { padding: 40px 20px; max-width: 1400px; margin: 0 auto; }
+  .section-title {
+    font-family: 'Orbitron', monospace; font-size: 20px; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-title::before { content: '>'; color: #00ff88; }
+  .section-desc { color: #888; margin-bottom: 30px; font-size: 14px; }
+
+  /* ═══ PALETAS DE COLOR ═══ */
+  .palettes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+  .palette-card {
+    border: 2px solid #222; border-radius: 12px; overflow: hidden;
+    cursor: pointer; transition: all 0.3s ease;
+    position: relative;
+  }
+  .palette-card:hover { border-color: #555; transform: translateY(-4px); }
+  .palette-card.selected { border-color: #00ff88; box-shadow: 0 0 30px rgba(0,255,136,0.15); }
+  .palette-card.selected::after {
+    content: 'SELECCIONADA'; position: absolute; top: 12px; right: 12px;
+    background: #00ff88; color: #000; font-size: 10px; font-weight: 700;
+    padding: 4px 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;
+  }
+
+  .palette-preview {
+    height: 220px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .palette-name { font-family: 'Orbitron', monospace; font-size: 14px; letter-spacing: 2px; }
+  .palette-headline { font-family: 'Orbitron', monospace; font-size: 22px; font-weight: 700; line-height: 1.3; }
+  .palette-body { font-family: 'JetBrains Mono', monospace; font-size: 12px; opacity: 0.7; }
+
+  .palette-colors { display: flex; height: 48px; }
+  .palette-colors div { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 10px; font-family: 'JetBrains Mono', monospace; }
+
+  .palette-info { padding: 16px; background: #111; }
+  .palette-info h3 { font-size: 16px; margin-bottom: 4px; }
+  .palette-info p { font-size: 12px; color: #888; line-height: 1.5; }
+  .palette-tags { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .palette-tags span {
+    font-size: 10px; padding: 3px 8px; border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Palette A: Cyberpunk Neon */
+  .pal-a .palette-preview { background: #0A0A0F; }
+  .pal-a .palette-name { color: #00FF88; }
+  .pal-a .palette-headline { color: #E0E0E0; text-shadow: 0 0 20px rgba(0,255,136,0.3); }
+  .pal-a .palette-body { color: #94A3B8; }
+  .pal-a .palette-tags span { background: #00ff8820; color: #00ff88; border: 1px solid #00ff8840; }
+
+  /* Palette B: Deep Void + Cyan/Magenta */
+  .pal-b .palette-preview { background: #0D0D0D; }
+  .pal-b .palette-name { color: #00FFFF; }
+  .pal-b .palette-headline { color: #F8FAFC; text-shadow: 0 0 20px rgba(0,255,255,0.3); }
+  .pal-b .palette-body { color: #94A3B8; }
+  .pal-b .palette-tags span { background: #00ffff20; color: #00ffff; border: 1px solid #00ffff40; }
+
+  /* Palette C: Midnight + Gold/Purple */
+  .pal-c .palette-preview { background: #0F172A; }
+  .pal-c .palette-name { color: #F59E0B; }
+  .pal-c .palette-headline { color: #F8FAFC; text-shadow: 0 0 20px rgba(245,158,11,0.3); }
+  .pal-c .palette-body { color: #94A3B8; }
+  .pal-c .palette-tags span { background: #f59e0b20; color: #F59E0B; border: 1px solid #f59e0b40; }
+
+  /* ═══ ESTILOS VISUALES ═══ */
+  .styles-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+
+  .style-card {
+    border: 2px solid #222; border-radius: 12px; overflow: hidden;
+    cursor: pointer; transition: all 0.3s ease;
+    position: relative;
+  }
+  .style-card:hover { border-color: #555; transform: translateY(-4px); }
+  .style-card.selected { border-color: #00ff88; box-shadow: 0 0 30px rgba(0,255,136,0.15); }
+  .style-card.selected::after {
+    content: 'SELECCIONADO'; position: absolute; top: 12px; right: 12px;
+    background: #00ff88; color: #000; font-size: 10px; font-weight: 700;
+    padding: 4px 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Style A: Terminal puro */
+  .style-terminal { background: #050505; }
+  .style-terminal .demo-area {
+    padding: 32px; font-family: 'JetBrains Mono', monospace;
+    min-height: 380px;
+  }
+  .style-terminal .term-bar {
+    display: flex; gap: 6px; margin-bottom: 16px;
+  }
+  .style-terminal .term-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .style-terminal .term-title {
+    flex: 1; text-align: center; font-size: 11px; color: #555;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .style-terminal .term-line {
+    font-size: 13px; line-height: 2; color: #33FF00;
+  }
+  .style-terminal .term-line .prompt { color: #00ff88; }
+  .style-terminal .term-line .cmd { color: #e0e0e0; }
+  .style-terminal .term-line .output { color: #888; }
+  .style-terminal .term-line .success { color: #33FF00; }
+  .style-terminal .term-line .accent { color: #00FFFF; }
+  .style-terminal .term-line .warn { color: #FFB000; }
+  .style-terminal .term-cursor {
+    display: inline-block; width: 8px; height: 16px; background: #33FF00;
+    animation: blink 1s infinite;
+  }
+  .style-terminal .hero-title {
+    font-family: 'Orbitron', monospace; font-size: 28px; color: #33FF00;
+    text-shadow: 0 0 30px rgba(51,255,0,0.4); margin: 20px 0 8px;
+    letter-spacing: 2px;
+  }
+  .style-terminal .hero-sub {
+    font-size: 12px; color: #888; border-left: 2px solid #33FF00; padding-left: 12px;
+  }
+  .style-terminal .btn-term {
+    display: inline-block; margin-top: 20px; padding: 10px 24px;
+    border: 1px solid #33FF00; color: #33FF00; background: transparent;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .style-terminal .btn-term:hover {
+    background: #33FF00; color: #050505;
+  }
+
+  /* Style B: Cyberpunk moderno */
+  .style-cyber { background: #0A0A0F; }
+  .style-cyber .demo-area {
+    padding: 32px; min-height: 380px;
+    background: linear-gradient(180deg, #0A0A0F 0%, #0f1520 100%);
+    position: relative; overflow: hidden;
+  }
+  .style-cyber .demo-area::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,136,0.03) 2px, rgba(0,255,136,0.03) 4px);
+    pointer-events: none;
+  }
+  .style-cyber .cyber-badge {
+    display: inline-block; padding: 6px 16px; border: 1px solid #00ff8840;
+    border-radius: 20px; font-size: 11px; color: #00ff88;
+    font-family: 'JetBrains Mono', monospace; margin-bottom: 16px;
+    background: #00ff8810;
+  }
+  .style-cyber .hero-title {
+    font-family: 'Orbitron', monospace; font-size: 32px; color: #F8FAFC;
+    line-height: 1.2; margin-bottom: 12px; font-weight: 700;
+  }
+  .style-cyber .hero-title .highlight {
+    color: #00ff88; text-shadow: 0 0 40px rgba(0,255,136,0.4);
+  }
+  .style-cyber .hero-sub {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #94A3B8;
+    line-height: 1.8; margin-bottom: 24px;
+  }
+  .style-cyber .btn-row { display: flex; gap: 12px; }
+  .style-cyber .btn-primary {
+    padding: 12px 28px; background: #00ff88; color: #0A0A0F;
+    border: none; border-radius: 8px; font-weight: 700; font-size: 14px;
+    font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 0 20px rgba(0,255,136,0.3);
+  }
+  .style-cyber .btn-primary:hover { box-shadow: 0 0 40px rgba(0,255,136,0.5); transform: translateY(-2px); }
+  .style-cyber .btn-secondary {
+    padding: 12px 28px; background: transparent; color: #e0e0e0;
+    border: 1px solid #333; border-radius: 8px; font-size: 14px;
+    font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s;
+  }
+  .style-cyber .btn-secondary:hover { border-color: #00ff88; color: #00ff88; }
+  .style-cyber .tool-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 24px;
+  }
+  .style-cyber .tool-chip {
+    padding: 8px 12px; background: #12121a; border: 1px solid #1e1e2e;
+    border-radius: 6px; font-size: 11px; color: #94A3B8;
+    font-family: 'JetBrains Mono', monospace; text-align: center;
+    transition: all 0.2s;
+  }
+  .style-cyber .tool-chip:hover { border-color: #00ff88; color: #00ff88; }
+
+  .style-info { padding: 20px; background: #111; }
+  .style-info h3 { font-size: 18px; margin-bottom: 6px; font-family: 'Orbitron', monospace; font-size: 14px; }
+  .style-info p { font-size: 13px; color: #888; line-height: 1.6; }
+  .style-info .pros { margin-top: 12px; }
+  .style-info .pros li { font-size: 12px; color: #aaa; margin-bottom: 4px; list-style: none; }
+  .style-info .pros li::before { content: '+ '; color: #00ff88; font-weight: bold; }
+
+  /* ═══ TIPOGRAFÍAS ═══ */
+  .typo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+
+  .typo-card {
+    border: 2px solid #222; border-radius: 12px; overflow: hidden;
+    cursor: pointer; transition: all 0.3s ease; background: #0a0a0f;
+    position: relative;
+  }
+  .typo-card:hover { border-color: #555; transform: translateY(-4px); }
+  .typo-card.selected { border-color: #00ff88; box-shadow: 0 0 30px rgba(0,255,136,0.15); }
+  .typo-card.selected::after {
+    content: 'SELECCIONADA'; position: absolute; top: 12px; right: 12px;
+    background: #00ff88; color: #000; font-size: 10px; font-weight: 700;
+    padding: 4px 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;
+  }
+
+  .typo-demo { padding: 32px; }
+  .typo-info { padding: 16px; background: #111; }
+  .typo-info h3 { font-size: 14px; font-family: 'Orbitron', monospace; margin-bottom: 4px; }
+  .typo-info p { font-size: 12px; color: #888; line-height: 1.5; }
+
+  /* ═══ FOOTER ═══ */
+  .footer {
+    text-align: center; padding: 40px 20px; border-top: 1px solid #222;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #555;
+  }
+  .footer .selected-summary {
+    margin-top: 20px; padding: 20px; background: #111; border-radius: 8px;
+    border: 1px solid #222; max-width: 600px; margin-left: auto; margin-right: auto;
+    text-align: left;
+  }
+  .footer .selected-summary h3 { color: #00ff88; font-size: 14px; margin-bottom: 12px; }
+  .footer .selected-summary .item {
+    display: flex; justify-content: space-between; padding: 6px 0;
+    border-bottom: 1px solid #1a1a1a; font-size: 12px;
+  }
+  .footer .selected-summary .item .label { color: #888; }
+  .footer .selected-summary .item .value { color: #e0e0e0; }
+
+  @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+  @media (max-width: 900px) {
+    .palettes, .styles-grid, .typo-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>DESIGN OPTIONS</h1>
+  <p>Haz click en cada opción para seleccionar — paleta, estilo visual y tipografía</p>
+</div>
+
+<!-- ═══ PALETAS ═══ -->
+<div class="section">
+  <div class="section-title">PALETA DE COLORES</div>
+  <div class="section-desc">Elige la combinación cromática para toda la demo</div>
+
+  <div class="palettes">
+    <!-- Palette A -->
+    <div class="palette-card pal-a" onclick="selectPalette(this, 'A')">
+      <div class="palette-preview">
+        <div class="palette-name">PALETA A — MATRIX NEON</div>
+        <div class="palette-headline">Agentes IA que<br>trabajan por ti</div>
+        <div class="palette-body">Verde neón sobre void negro. Estética hacker elegante.</div>
+      </div>
+      <div class="palette-colors">
+        <div style="background:#050505;color:#33FF00">#050505</div>
+        <div style="background:#00FF88;color:#000">#00FF88</div>
+        <div style="background:#00FFFF;color:#000">#00FFFF</div>
+        <div style="background:#1A3D1A;color:#33FF00">#1A3D1A</div>
+        <div style="background:#FFB000;color:#000">#FFB000</div>
+      </div>
+      <div class="palette-info">
+        <h3>Matrix Neon</h3>
+        <p>Verde terminal clásico con acentos cyan. Máximo contraste, estética de "código ejecutándose". OLED optimizado.</p>
+        <div class="palette-tags">
+          <span>terminal</span><span>hacker</span><span>high-contrast</span><span>OLED</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Palette B -->
+    <div class="palette-card pal-b" onclick="selectPalette(this, 'B')">
+      <div class="palette-preview">
+        <div class="palette-name">PALETA B — CYBERPUNK DUAL</div>
+        <div class="palette-headline">Agentes IA que<br>trabajan por ti</div>
+        <div class="palette-body">Cyan + Magenta sobre deep void. Sci-fi premium.</div>
+      </div>
+      <div class="palette-colors">
+        <div style="background:#0A0A0F;color:#00FFFF">#0A0A0F</div>
+        <div style="background:#00FFFF;color:#000">#00FFFF</div>
+        <div style="background:#FF00FF;color:#000">#FF00FF</div>
+        <div style="background:#12121A;color:#00FFFF">#12121A</div>
+        <div style="background:#8B5CF6;color:#fff">#8B5CF6</div>
+      </div>
+      <div class="palette-info">
+        <h3>Cyberpunk Dual</h3>
+        <p>Dual-tone cyan/magenta con profundidad void. Más visual y dinámico, evoca interfaces HUD futuristas.</p>
+        <div class="palette-tags">
+          <span>cyberpunk</span><span>HUD</span><span>futurista</span><span>dual-tone</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Palette C -->
+    <div class="palette-card pal-c" onclick="selectPalette(this, 'C')">
+      <div class="palette-preview">
+        <div class="palette-name">PALETA C — MIDNIGHT GOLD</div>
+        <div class="palette-headline">Agentes IA que<br>trabajan por ti</div>
+        <div class="palette-body">Dorado + Púrpura sobre midnight blue. Premium y confiable.</div>
+      </div>
+      <div class="palette-colors">
+        <div style="background:#0F172A;color:#F59E0B">#0F172A</div>
+        <div style="background:#F59E0B;color:#000">#F59E0B</div>
+        <div style="background:#8B5CF6;color:#fff">#8B5CF6</div>
+        <div style="background:#1E293B;color:#F59E0B">#1E293B</div>
+        <div style="background:#22C55E;color:#000">#22C55E</div>
+      </div>
+      <div class="palette-info">
+        <h3>Midnight Gold</h3>
+        <p>Dorado transmite valor/confianza, púrpura tech/innovación. Más corporate pero igual dark. Ideal para audiencia ejecutiva.</p>
+        <div class="palette-tags">
+          <span>premium</span><span>corporate</span><span>trust</span><span>fintech</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ESTILOS ═══ -->
+<div class="section">
+  <div class="section-title">ESTILO VISUAL</div>
+  <div class="section-desc">Elige cómo se siente la interfaz — terminal puro o cyberpunk moderno</div>
+
+  <div class="styles-grid">
+    <!-- Style A: Terminal -->
+    <div class="style-card style-terminal" onclick="selectStyle(this, 'A')">
+      <div class="demo-area">
+        <div class="term-bar">
+          <div class="term-dot" style="background:#ff5f56"></div>
+          <div class="term-dot" style="background:#ffbd2e"></div>
+          <div class="term-dot" style="background:#27c93f"></div>
+          <div class="term-title">agent@cintax ~ demo</div>
+        </div>
+        <div class="term-line"><span class="prompt">$</span> <span class="cmd">agent init --client "Don Pedro SpA"</span></div>
+        <div class="term-line"><span class="output">Loading tools...</span> <span class="success">[6/6 ready]</span></div>
+        <div class="term-line"><span class="output">Channels:</span> <span class="accent">WhatsApp</span> | <span class="accent">WebChat</span> | <span class="accent">Email</span></div>
+        <div class="term-line"><span class="success">Agent online.</span> <span class="warn">Awaiting input...</span></div>
+        <div class="hero-title">AI AGENT DEMO</div>
+        <div class="hero-sub">Automatización inteligente para PYMEs.<br>6 herramientas. 3 canales. 1 agente.</div>
+        <div class="btn-term">[ INICIAR DEMO ]</div>
+      </div>
+      <div class="style-info">
+        <h3>TERMINAL PURO</h3>
+        <p>Todo se siente como una terminal real. Cero border-radius. Monospace everywhere. ASCII borders. Máxima credibilidad técnica.</p>
+        <ul class="pros">
+          <li>Credibilidad técnica máxima</li>
+          <li>Dice "este tipo sabe programar"</li>
+          <li>Ultra performante (solo texto)</li>
+          <li>Estilo único, nadie más lo trae</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Style B: Cyberpunk Moderno -->
+    <div class="style-card style-cyber" onclick="selectStyle(this, 'B')">
+      <div class="demo-area">
+        <div class="cyber-badge">AI-POWERED AUTOMATION</div>
+        <div class="hero-title">
+          Agentes IA que<br>
+          <span class="highlight">trabajan por tu empresa</span>
+        </div>
+        <div class="hero-sub">
+          Consultas tributarias en tiempo real. Reportes automáticos.<br>
+          WhatsApp, Web Chat y Email integrados en un solo agente.
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary">Probar Agente</button>
+          <button class="btn-secondary">Ver Arquitectura</button>
+        </div>
+        <div class="tool-grid">
+          <div class="tool-chip">Normativa SII</div>
+          <div class="tool-chip">Reportes</div>
+          <div class="tool-chip">Agendar</div>
+          <div class="tool-chip">Email</div>
+          <div class="tool-chip">Trámites</div>
+          <div class="tool-chip">Cálculos</div>
+        </div>
+      </div>
+      <div class="style-info">
+        <h3>CYBERPUNK MODERNO</h3>
+        <p>Dark mode con glassmorphism sutil, gradientes, border-radius, componentes modernos. Scanlines de fondo. Balance entre tech y UX profesional.</p>
+        <ul class="pros">
+          <li>Más visual e impresionante</li>
+          <li>Mejor UX para interacción real</li>
+          <li>Componentes 21st.dev encajan perfecto</li>
+          <li>Familiar pero con personalidad</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TIPOGRAFÍAS ═══ -->
+<div class="section">
+  <div class="section-title">TIPOGRAFÍA</div>
+  <div class="section-desc">Elige la combinación heading + body</div>
+
+  <div class="typo-grid">
+    <!-- Typo A -->
+    <div class="typo-card" onclick="selectTypo(this, 'A')">
+      <div class="typo-demo">
+        <p style="font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:#00ff88;margin-bottom:8px;letter-spacing:2px">Orbitron 900</p>
+        <p style="font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:#e0e0e0;margin-bottom:16px">Headings con presencia sci-fi</p>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:14px;color:#94a3b8;line-height:1.8">JetBrains Mono 400 — El estándar de los desarrolladores. Ligatures, alta legibilidad, se siente como código real. Cada carácter tiene el mismo ancho.</p>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#555;margin-top:12px">const agent = new CintaxAgent({ tools: 6, channels: 3 });</p>
+      </div>
+      <div class="typo-info">
+        <h3>ORBITRON + JETBRAINS MONO</h3>
+        <p>La más cyberpunk. Orbitron es geométrica y futurista. JetBrains Mono es el estándar de código. Juntas = ciencia ficción que funciona.</p>
+      </div>
+    </div>
+
+    <!-- Typo B -->
+    <div class="typo-card" onclick="selectTypo(this, 'B')">
+      <div class="typo-demo">
+        <p style="font-family:'Space Mono',monospace;font-size:32px;font-weight:700;color:#00ff88;margin-bottom:8px">Space Mono 700</p>
+        <p style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:#e0e0e0;margin-bottom:16px">Headings con carácter retro</p>
+        <p style="font-family:'Inter',sans-serif;font-size:14px;color:#94a3b8;line-height:1.8;font-weight:400">Inter 400 — La tipografía más legible de la web moderna. Sans-serif limpia, optimizada para pantalla. Body text que respira y se lee sin esfuerzo.</p>
+        <p style="font-family:'Space Mono',monospace;font-size:12px;color:#555;margin-top:12px">const agent = new CintaxAgent({ tools: 6, channels: 3 });</p>
+      </div>
+      <div class="typo-info">
+        <h3>SPACE MONO + INTER</h3>
+        <p>Balance entre tech y legibilidad. Space Mono es monospace con personalidad. Inter para body es ultra legible. Más profesional, menos extremo.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RESUMEN ═══ -->
+<div class="footer">
+  <p>Haz click en tus opciones preferidas arriba</p>
+  <div class="selected-summary" id="summary">
+    <h3>> SELECCIÓN ACTUAL</h3>
+    <div class="item"><span class="label">Paleta:</span> <span class="value" id="sel-palette">Sin seleccionar</span></div>
+    <div class="item"><span class="label">Estilo:</span> <span class="value" id="sel-style">Sin seleccionar</span></div>
+    <div class="item"><span class="label">Tipografía:</span> <span class="value" id="sel-typo">Sin seleccionar</span></div>
+  </div>
+</div>
+
+<script>
+  const labels = {
+    palette: { A: 'Matrix Neon (Verde/Cyan/Negro)', B: 'Cyberpunk Dual (Cyan/Magenta/Void)', C: 'Midnight Gold (Dorado/Púrpura/Navy)' },
+    style: { A: 'Terminal Puro', B: 'Cyberpunk Moderno' },
+    typo: { A: 'Orbitron + JetBrains Mono', B: 'Space Mono + Inter' }
+  };
+  function selectPalette(el, id) {
+    document.querySelectorAll('.palette-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('sel-palette').textContent = labels.palette[id];
+  }
+  function selectStyle(el, id) {
+    document.querySelectorAll('.style-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('sel-style').textContent = labels.style[id];
+  }
+  function selectTypo(el, id) {
+    document.querySelectorAll('.typo-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('sel-typo').textContent = labels.typo[id];
+  }
+</script>
+
+</body>
+</html>
