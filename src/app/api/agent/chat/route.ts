@@ -275,11 +275,11 @@ async function handleNonStreaming(
 
     if (!hasToolUse || response.stop_reason !== "tool_use") {
       const textContent = response.content
-        .filter(
-          (block): block is ContentBlock & { type: "text"; text: string } =>
-            block.type === "text"
-        )
-        .map((block) => block.text)
+        .filter((block) => block.type === "text")
+        .map((block) => {
+          if (block.type === "text") return block.text;
+          return "";
+        })
         .join("\n");
 
       return { role: "assistant", content: textContent };
@@ -293,11 +293,12 @@ async function handleNonStreaming(
     const toolResults: ToolResultBlockParam[] = [];
     for (const block of response.content) {
       if (block.type === "tool_use") {
+        const toolBlock = block as Anthropic.Messages.ToolUseBlock;
         const result = await executeToolCall(
-          block.name,
-          block.input as Record<string, unknown>
+          toolBlock.name,
+          toolBlock.input as Record<string, unknown>
         );
-        toolResults.push(buildToolResult(block.id, result));
+        toolResults.push(buildToolResult(toolBlock.id, result));
       }
     }
 

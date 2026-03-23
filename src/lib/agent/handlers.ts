@@ -91,7 +91,6 @@ async function handleGenerateReport(
   if (parsed.reportType === "mensual") {
     const [year, month] = parsed.period.split("-").map(Number);
     filteredMonths = months.filter((m) => {
-      const monthIndex = months.indexOf(m);
       const monthNames = [
         "Enero",
         "Febrero",

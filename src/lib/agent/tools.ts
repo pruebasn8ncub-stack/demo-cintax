@@ -184,7 +184,7 @@ export const toolInputSchemas = {
   }),
 
   sendEmail: z.object({
-    to: z.string().email(),
+    to: z.string().email({ message: "Email inválido" }),
     subject: z.string().min(1),
     body: z.string().min(1),
     priority: z.enum(["alta", "normal", "baja"]).optional(),
