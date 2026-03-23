@@ -8,6 +8,8 @@ import { ChevronDown } from "lucide-react";
 import TypeWriter from "@/components/shared/TypeWriter";
 import ParticleField from "@/components/shared/ParticleField";
 import { cn } from "@/lib/utils";
+import { AnimatedBadge } from "@/components/ui/animated-badge";
+import { ShinyButton } from "@/components/ui/shiny-button";
 
 const RemotionPlayer = dynamic(
   () => import("@remotion/player").then((mod) => mod.Player),
@@ -117,16 +119,9 @@ export default function Hero() {
           <motion.div
             variants={fadeUpVariants}
             transition={{ duration: 0.5, ease: "easeOut", delay: 0 }}
+            className="mb-6"
           >
-            <span
-              className={cn(
-                "mb-6 inline-block rounded-full border border-primary/50 px-4 py-1.5",
-                "font-mono text-xs uppercase tracking-widest text-primary",
-                "glass"
-              )}
-            >
-              AI-Powered Automation
-            </span>
+            <AnimatedBadge text="AI-POWERED AUTOMATION" color="#F59E0B" />
           </motion.div>
 
           {/* Headline */}
@@ -175,20 +170,9 @@ export default function Hero() {
             transition={{ duration: 0.5, ease: "easeOut", delay: 0.3 }}
             className="flex w-full flex-col items-center gap-4 sm:w-auto sm:flex-row"
           >
-            <button
-              onClick={handleProbarAgente}
-              className={cn(
-                "w-full rounded-lg bg-primary px-8 py-3 font-semibold text-primary-foreground",
-                "transition-all duration-200 hover:scale-[1.02] hover:brightness-110",
-                "sm:w-auto"
-              )}
-              style={{
-                boxShadow:
-                  "0 0 20px rgba(245, 158, 11, 0.3), 0 4px 12px rgba(0, 0, 0, 0.3)",
-              }}
-            >
+            <ShinyButton onClick={handleProbarAgente}>
               Probar Agente
-            </button>
+            </ShinyButton>
             <button
               onClick={handleVerArquitectura}
               className={cn(

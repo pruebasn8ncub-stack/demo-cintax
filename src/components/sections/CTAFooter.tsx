@@ -1,9 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
 import SectionWrapper from "@/components/shared/SectionWrapper";
-import { cn } from "@/lib/utils";
+import { ShinyButton } from "@/components/ui/shiny-button";
 
 export default function CTAFooter() {
   return (
@@ -30,20 +29,7 @@ export default function CTAFooter() {
             operación de tu empresa.
           </p>
 
-          <motion.button
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.98 }}
-            className={cn(
-              "rounded-lg bg-primary px-8 py-3 font-semibold text-primary-foreground",
-              "transition-colors duration-200"
-            )}
-            style={{
-              boxShadow:
-                "0 0 24px rgba(245, 158, 11, 0.35), 0 4px 16px rgba(0, 0, 0, 0.3)",
-            }}
-          >
-            Agendar Demo
-          </motion.button>
+          <ShinyButton>Agendar Demo</ShinyButton>
         </div>
       </SectionWrapper>
 
