@@ -151,7 +151,23 @@ export default function Architecture() {
               </GlassCard>
             </motion.div>
 
-            {/* Middle straight line → n8n (handled by the diagonal SVGs meeting at row 2) */}
+            {/* Middle straight line: Web Chat → n8n */}
+            <motion.div
+              style={{ gridColumn: 2, gridRow: 2, zIndex: 10 }}
+              className="flex items-center"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+              transition={{ delay: 0.55, duration: 0.5 }}
+            >
+              <svg viewBox="0 0 100 20" className="h-5 w-full" fill="none" preserveAspectRatio="none">
+                <path d="M 0 10 L 100 10" stroke="#F59E0B" strokeWidth="2.5" strokeDasharray="6 4" strokeLinecap="round">
+                  <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="0.8s" repeatCount="indefinite" />
+                </path>
+                <circle r="4" fill="#F59E0B">
+                  <animateMotion dur="1.5s" repeatCount="indefinite" path="M 0 10 L 100 10" begin="0.2s" />
+                </circle>
+              </svg>
+            </motion.div>
 
             {/* n8n card spans row 1-3 in col 3 */}
             <motion.div
