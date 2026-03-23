@@ -19,18 +19,13 @@ import SectionWrapper from "@/components/shared/SectionWrapper";
 import GlassCard from "@/components/shared/GlassCard";
 import { cn } from "@/lib/utils";
 
+import { FlowAnimation } from "@/remotion/FlowAnimation";
+
 const RemotionPlayer = dynamic(
-  () => import("@remotion/player").then((mod) => mod.Player),
+  () => import("@remotion/player").then((mod) => ({ default: mod.Player })),
   { ssr: false }
 );
 
-const FlowAnimationLazy = dynamic(
-  () =>
-    import("@/remotion/FlowAnimation").then((mod) => ({
-      default: mod.FlowAnimation,
-    })),
-  { ssr: false }
-);
 
 /* ── Types ── */
 
@@ -245,7 +240,8 @@ export default function N8nFlows() {
         {/* Remotion Flow Animation */}
         <div className="mx-auto mt-6 max-w-3xl overflow-hidden rounded-lg">
           <RemotionPlayer
-            component={FlowAnimationLazy}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            component={FlowAnimation as any}
             inputProps={{ workflowIndex: activeTab }}
             durationInFrames={90}
             fps={30}

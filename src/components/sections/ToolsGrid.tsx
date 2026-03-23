@@ -15,16 +15,10 @@ import SectionWrapper from "@/components/shared/SectionWrapper";
 import GlassCard from "@/components/shared/GlassCard";
 import { cn } from "@/lib/utils";
 
-const RemotionPlayer = dynamic(
-  () => import("@remotion/player").then((mod) => mod.Player),
-  { ssr: false }
-);
+import { ToolShowcase } from "@/remotion/ToolShowcase";
 
-const ToolShowcaseLazy = dynamic(
-  () =>
-    import("@/remotion/ToolShowcase").then((mod) => ({
-      default: mod.ToolShowcase,
-    })),
+const RemotionPlayer = dynamic(
+  () => import("@remotion/player").then((mod) => ({ default: mod.Player })),
   { ssr: false }
 );
 
@@ -214,7 +208,7 @@ function ToolCard({
               className="mt-2 overflow-hidden rounded-md"
             >
               <RemotionPlayer
-                component={ToolShowcaseLazy}
+                component={ToolShowcase as any}
                 inputProps={{ toolIndex: index }}
                 durationInFrames={60}
                 fps={30}

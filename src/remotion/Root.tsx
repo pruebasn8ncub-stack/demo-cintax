@@ -16,7 +16,8 @@ export const RemotionRoot: React.FC = () => {
       />
       <Composition
         id="FlowAnimation"
-        component={FlowAnimation}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        component={FlowAnimation as any}
         durationInFrames={90}
         fps={30}
         width={800}
@@ -25,7 +26,8 @@ export const RemotionRoot: React.FC = () => {
       />
       <Composition
         id="ToolShowcase"
-        component={ToolShowcase}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        component={ToolShowcase as any}
         durationInFrames={60}
         fps={30}
         width={400}
