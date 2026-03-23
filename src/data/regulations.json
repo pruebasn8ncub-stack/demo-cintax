@@ -1,0 +1,186 @@
+[
+  {
+    "id": "REG-001",
+    "title": "Tasa general de IVA en Chile",
+    "article": "Art. 14, DL 825",
+    "category": "iva",
+    "summary": "La tasa general del Impuesto al Valor Agregado (IVA) en Chile es del 19%, aplicable sobre la base imponible de las ventas y servicios gravados.",
+    "source": "Decreto Ley 825, Ley sobre Impuesto a las Ventas y Servicios"
+  },
+  {
+    "id": "REG-002",
+    "title": "Crédito fiscal IVA",
+    "article": "Art. 23, DL 825",
+    "category": "iva",
+    "summary": "Los contribuyentes tienen derecho a un crédito fiscal equivalente al IVA soportado en las compras de bienes y servicios destinados a su actividad económica. El crédito se imputa contra el débito fiscal del mismo período.",
+    "source": "Decreto Ley 825, Ley sobre Impuesto a las Ventas y Servicios"
+  },
+  {
+    "id": "REG-003",
+    "title": "Débito fiscal IVA",
+    "article": "Art. 20, DL 825",
+    "category": "iva",
+    "summary": "El débito fiscal corresponde al IVA recargado en las ventas y servicios efectuados por el contribuyente durante el período tributario. Se calcula como el 19% del monto neto de las operaciones gravadas.",
+    "source": "Decreto Ley 825, Ley sobre Impuesto a las Ventas y Servicios"
+  },
+  {
+    "id": "REG-004",
+    "title": "Declaración mensual de IVA (Formulario 29)",
+    "article": "Art. 64, DL 825",
+    "category": "iva",
+    "summary": "Los contribuyentes afectos a IVA deben presentar mensualmente el Formulario 29 ante el SII, declarando y pagando la diferencia entre débito y crédito fiscal. El plazo vence el día 12 del mes siguiente al período tributario.",
+    "source": "Decreto Ley 825 y Resolución SII"
+  },
+  {
+    "id": "REG-005",
+    "title": "IVA en servicios de alimentación",
+    "article": "Art. 2 N°2, DL 825",
+    "category": "iva",
+    "summary": "Los servicios de alimentación prestados por restaurantes, cafeterías y establecimientos similares están gravados con IVA al 19%. Se considera hecho gravado la prestación del servicio al consumidor final.",
+    "source": "Decreto Ley 825, Ley sobre Impuesto a las Ventas y Servicios"
+  },
+  {
+    "id": "REG-006",
+    "title": "Propinas y base imponible IVA",
+    "article": "Art. 15, DL 825",
+    "category": "iva",
+    "summary": "Las propinas voluntarias no forman parte de la base imponible del IVA. Sin embargo, los recargos obligatorios por servicio sí deben incluirse en la base imponible y están gravados con el impuesto.",
+    "source": "Decreto Ley 825 y Circular SII N°37"
+  },
+  {
+    "id": "REG-007",
+    "title": "Pagos Provisionales Mensuales (PPM) obligatorios",
+    "article": "Art. 84 letra a), DL 824",
+    "category": "ppm",
+    "summary": "Los contribuyentes de Primera Categoría que declaren renta efectiva deben efectuar PPM equivalentes a un porcentaje sobre los ingresos brutos mensuales. La tasa base para PYMES es del 0,25%, ajustable según la relación entre impuesto de primera categoría e ingresos brutos del año anterior.",
+    "source": "Decreto Ley 824, Ley sobre Impuesto a la Renta"
+  },
+  {
+    "id": "REG-008",
+    "title": "Cálculo y ajuste de tasa PPM",
+    "article": "Art. 84 letra a) inciso 3°, DL 824",
+    "category": "ppm",
+    "summary": "La tasa de PPM se recalcula anualmente en abril con base en el impuesto de primera categoría determinado en la declaración anual dividido por los ingresos brutos del ejercicio anterior. Si no hay impuesto determinado, se aplica la tasa mínima del 0,25%.",
+    "source": "Decreto Ley 824, Ley sobre Impuesto a la Renta"
+  },
+  {
+    "id": "REG-009",
+    "title": "Régimen Pro-PYME (14D N°3) — Tributación transparente",
+    "article": "Art. 14 letra D) N°3, DL 824",
+    "category": "renta",
+    "summary": "Las PYMES acogidas al régimen 14D N°3 (Pro-PYME transparente) no pagan impuesto de primera categoría. Las utilidades se asignan directamente a los propietarios, quienes tributan con impuesto global complementario o adicional. Requisito: ingresos promedio de los últimos 3 años no superen 75.000 UF.",
+    "source": "Decreto Ley 824, Ley sobre Impuesto a la Renta (Ley 21.210)"
+  },
+  {
+    "id": "REG-010",
+    "title": "Régimen Pro-PYME general (14D N°8)",
+    "article": "Art. 14 letra D) N°8, DL 824",
+    "category": "renta",
+    "summary": "Las PYMES acogidas al régimen 14D N°8 (Pro-PYME general) pagan impuesto de primera categoría con tasa reducida del 25%. Pueden deducir como gasto el 50% de la renta líquida imponible reinvertida. Requisito: ingresos promedio de últimos 3 años no superen 75.000 UF.",
+    "source": "Decreto Ley 824, Ley sobre Impuesto a la Renta"
+  },
+  {
+    "id": "REG-011",
+    "title": "Declaración anual de renta (Formulario 22)",
+    "article": "Art. 65, DL 824",
+    "category": "renta",
+    "summary": "Todos los contribuyentes de primera categoría deben presentar la declaración anual de impuesto a la renta mediante Formulario 22 durante el mes de abril. Para régimen Pro-PYME transparente, se informan las rentas asignadas a los socios.",
+    "source": "Decreto Ley 824, Ley sobre Impuesto a la Renta"
+  },
+  {
+    "id": "REG-012",
+    "title": "Tasa de impuesto de primera categoría",
+    "article": "Art. 20, DL 824",
+    "category": "renta",
+    "summary": "La tasa general de impuesto de primera categoría es del 27% para empresas en régimen semi-integrado y 25% para empresas en régimen Pro-PYME general (14D N°8). Las PYMES en régimen transparente (14D N°3) están exentas de este impuesto.",
+    "source": "Decreto Ley 824, Ley sobre Impuesto a la Renta"
+  },
+  {
+    "id": "REG-013",
+    "title": "Cotizaciones previsionales obligatorias del empleador",
+    "article": "Art. 17, DL 3.500 y Art. 84, DFL 1",
+    "category": "laboral",
+    "summary": "El empleador debe retener y pagar las cotizaciones de AFP (aproximadamente 12,5% cargo del trabajador), salud (7% cargo del trabajador) y aportar el seguro de invalidez y sobrevivencia (SIS, ~1,85% cargo del empleador). El costo total de cotizaciones para el empleador representa aproximadamente un 20,5% adicional al sueldo bruto considerando todas las cargas.",
+    "source": "DL 3.500 (AFP), DFL 1 de Salud, Ley 16.744"
+  },
+  {
+    "id": "REG-014",
+    "title": "Seguro de cesantía (AFC)",
+    "article": "Ley 19.728",
+    "category": "laboral",
+    "summary": "El seguro de cesantía (AFC) es obligatorio para trabajadores con contrato. Para contratos indefinidos: 0,6% cargo del trabajador y 2,4% cargo del empleador. Para contratos a plazo fijo: 3% cargo del empleador. Los aportes se depositan en la AFC Chile.",
+    "source": "Ley 19.728, Seguro de Cesantía"
+  },
+  {
+    "id": "REG-015",
+    "title": "Libro de remuneraciones electrónico",
+    "article": "Art. 62 bis, Código del Trabajo",
+    "category": "laboral",
+    "summary": "Las empresas con 5 o más trabajadores deben llevar un libro de remuneraciones electrónico y remitirlo mensualmente a la Dirección del Trabajo. Debe contener el detalle de haberes, descuentos y aportes de cada trabajador.",
+    "source": "Código del Trabajo, Art. 62 bis (Ley 21.327)"
+  },
+  {
+    "id": "REG-016",
+    "title": "Ley Karin — Prevención del acoso laboral",
+    "article": "Ley 21.643",
+    "category": "laboral",
+    "summary": "La Ley Karin (21.643) establece la obligación de los empleadores de implementar protocolos de prevención del acoso laboral, sexual y violencia en el trabajo. Incluye la obligación de tener un canal de denuncia, investigar en un plazo de 30 días y adoptar medidas correctivas. Vigente desde agosto 2024.",
+    "source": "Ley 21.643 (Ley Karin)"
+  },
+  {
+    "id": "REG-017",
+    "title": "Plazo de pago de cotizaciones previsionales",
+    "article": "Art. 19, DL 3.500",
+    "category": "laboral",
+    "summary": "Las cotizaciones previsionales deben ser pagadas por el empleador dentro de los primeros 10 días del mes siguiente al que se devengaron las remuneraciones. Este plazo se extiende hasta el día 13 si el pago se realiza por medios electrónicos a través de Previred.",
+    "source": "DL 3.500, Art. 19"
+  },
+  {
+    "id": "REG-018",
+    "title": "Plazos de declaración y pago ante el SII",
+    "article": "Art. 36, Código Tributario",
+    "category": "general",
+    "summary": "Las declaraciones mensuales (F29) vencen el día 12 del mes siguiente. Las declaraciones anuales (F22) vencen el 30 de abril. El SII puede extender plazos mediante resolución. El pago fuera de plazo genera intereses del 1,5% mensual y multas.",
+    "source": "Código Tributario, Art. 36 y 53"
+  },
+  {
+    "id": "REG-019",
+    "title": "Multas e intereses por declaración tardía",
+    "article": "Art. 97 N°2 y Art. 53, Código Tributario",
+    "category": "general",
+    "summary": "La declaración tardía de impuestos genera una multa del 10% de los impuestos adeudados, más un 2% adicional por cada mes de atraso (tope 30%). Además, se aplica un interés penal del 1,5% mensual sobre el impuesto no pagado oportunamente.",
+    "source": "Código Tributario, Art. 97 N°2 y Art. 53"
+  },
+  {
+    "id": "REG-020",
+    "title": "Rectificación de declaraciones de impuestos",
+    "article": "Art. 36 bis, Código Tributario",
+    "category": "general",
+    "summary": "Los contribuyentes pueden rectificar sus declaraciones de impuestos presentando una nueva declaración que reemplace la anterior. Si la rectificación resulta en mayor impuesto a pagar, se aplican intereses y multas desde la fecha original de vencimiento. Las rectificaciones que disminuyen el impuesto requieren revisión del SII.",
+    "source": "Código Tributario, Art. 36 bis"
+  },
+  {
+    "id": "REG-021",
+    "title": "Obligación de emitir boletas y facturas electrónicas",
+    "article": "Art. 53 y 54, DL 825",
+    "category": "iva",
+    "summary": "Los contribuyentes de IVA están obligados a emitir documentos tributarios electrónicos (DTE). Las ventas a consumidores finales requieren boleta electrónica, mientras que las ventas a otros contribuyentes requieren factura electrónica. La emisión debe realizarse a través del sistema del SII o un proveedor autorizado.",
+    "source": "Decreto Ley 825 y Resolución SII Ex. N°11"
+  },
+  {
+    "id": "REG-022",
+    "title": "Depreciación acelerada para PYMES",
+    "article": "Art. 31 N°5 bis, DL 824",
+    "category": "renta",
+    "summary": "Las PYMES acogidas al régimen Pro-PYME pueden depreciar de forma instantánea (en un solo ejercicio) los bienes del activo inmovilizado adquiridos. Esto permite rebajar como gasto el 100% del valor del activo en el año de adquisición, mejorando el flujo de caja.",
+    "source": "Decreto Ley 824, Ley sobre Impuesto a la Renta"
+  },
+  {
+    "id": "REG-023",
+    "title": "Gratificación legal",
+    "article": "Art. 46 y 47, Código del Trabajo",
+    "category": "laboral",
+    "summary": "El empleador que obtiene utilidades debe pagar gratificación legal a sus trabajadores. Puede optar entre: (a) repartir el 30% de las utilidades líquidas, o (b) pagar el 25% de la remuneración mensual con tope de 4,75 IMM al año. La mayoría de las empresas opta por la alternativa (b) por ser más predecible.",
+    "source": "Código del Trabajo, Art. 46 y 47"
+  }
+]
