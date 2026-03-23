@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import SectionWrapper from "@/components/shared/SectionWrapper";
 import { cn } from "@/lib/utils";
@@ -8,7 +9,12 @@ export default function CTAFooter() {
   return (
     <>
       {/* CTA Section */}
-      <SectionWrapper className="px-4 py-24 sm:px-6 lg:px-8" delay={0.1}>
+      <SectionWrapper className="relative overflow-hidden px-4 py-24 sm:px-6 lg:px-8" delay={0.1}>
+        {/* Background layer: AI-generated image */}
+        <div className="absolute inset-0 z-0">
+          <Image src="/images/cta-bg.png" alt="" fill className="object-cover opacity-15" />
+        </div>
+
         <div
           className="mx-auto max-w-4xl rounded-2xl px-6 py-16 text-center sm:px-12"
           style={{

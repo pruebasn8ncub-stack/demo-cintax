@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import {
   Search,
   FileText,
@@ -13,6 +14,19 @@ import {
 import SectionWrapper from "@/components/shared/SectionWrapper";
 import GlassCard from "@/components/shared/GlassCard";
 import { cn } from "@/lib/utils";
+
+const RemotionPlayer = dynamic(
+  () => import("@remotion/player").then((mod) => mod.Player),
+  { ssr: false }
+);
+
+const ToolShowcaseLazy = dynamic(
+  () =>
+    import("@/remotion/ToolShowcase").then((mod) => ({
+      default: mod.ToolShowcase,
+    })),
+  { ssr: false }
+);
 
 interface Tool {
   id: string;
@@ -141,7 +155,19 @@ function MiniVisual({ toolId }: { toolId: string }) {
   }
 }
 
-function ToolCard({ tool, index }: { tool: Tool; index: number }) {
+function ToolCard({
+  tool,
+  index,
+  isHovered,
+  onHover,
+  onLeave,
+}: {
+  tool: Tool;
+  index: number;
+  isHovered: boolean;
+  onHover: () => void;
+  onLeave: () => void;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
@@ -163,10 +189,12 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
       onMouseEnter={(e) => {
         e.currentTarget.style.filter =
           "drop-shadow(0 0 12px rgba(245, 158, 11, 0.25))";
+        onHover();
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.filter =
           "drop-shadow(0 0 0px transparent)";
+        onLeave();
       }}
     >
       <GlassCard hover glow="primary" className="h-full p-5">
@@ -174,6 +202,35 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
         <h3 className="mt-3 font-heading text-base font-semibold text-foreground">
           {tool.name}
         </h3>
+
+        {/* Remotion ToolShowcase on hover */}
+        <AnimatePresence>
+          {isHovered && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="mt-2 overflow-hidden rounded-md"
+            >
+              <RemotionPlayer
+                component={ToolShowcaseLazy}
+                inputProps={{ toolIndex: index }}
+                durationInFrames={60}
+                fps={30}
+                compositionWidth={400}
+                compositionHeight={200}
+                loop
+                autoPlay
+                controls={false}
+                style={{
+                  width: "100%",
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <p className="mt-1 font-sans text-sm leading-relaxed text-muted-foreground">
           {tool.description}
         </p>
@@ -184,6 +241,8 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
 }
 
 export default function ToolsGrid() {
+  const [hoveredTool, setHoveredTool] = useState<number | null>(null);
+
   return (
     <SectionWrapper className="px-4 py-20 sm:px-6 lg:px-8" delay={0.1}>
       <div className="mx-auto max-w-7xl">
@@ -206,7 +265,14 @@ export default function ToolsGrid() {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {TOOLS.map((tool, i) => (
-            <ToolCard key={tool.id} tool={tool} index={i} />
+            <ToolCard
+              key={tool.id}
+              tool={tool}
+              index={i}
+              isHovered={hoveredTool === i}
+              onHover={() => setHoveredTool(i)}
+              onLeave={() => setHoveredTool(null)}
+            />
           ))}
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import {
   Webhook,
@@ -17,6 +18,19 @@ import type { LucideIcon } from "lucide-react";
 import SectionWrapper from "@/components/shared/SectionWrapper";
 import GlassCard from "@/components/shared/GlassCard";
 import { cn } from "@/lib/utils";
+
+const RemotionPlayer = dynamic(
+  () => import("@remotion/player").then((mod) => mod.Player),
+  { ssr: false }
+);
+
+const FlowAnimationLazy = dynamic(
+  () =>
+    import("@/remotion/FlowAnimation").then((mod) => ({
+      default: mod.FlowAnimation,
+    })),
+  { ssr: false }
+);
 
 /* ── Types ── */
 
@@ -226,6 +240,24 @@ export default function N8nFlows() {
           <AnimatePresence mode="wait">
             <FlowDiagram workflow={workflows[activeTab]} />
           </AnimatePresence>
+        </div>
+
+        {/* Remotion Flow Animation */}
+        <div className="mx-auto mt-6 max-w-3xl overflow-hidden rounded-lg">
+          <RemotionPlayer
+            component={FlowAnimationLazy}
+            inputProps={{ workflowIndex: activeTab }}
+            durationInFrames={90}
+            fps={30}
+            compositionWidth={800}
+            compositionHeight={200}
+            loop
+            autoPlay
+            controls={false}
+            style={{
+              width: "100%",
+            }}
+          />
         </div>
       </section>
     </SectionWrapper>

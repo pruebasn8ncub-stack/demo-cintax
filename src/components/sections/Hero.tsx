@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import TypeWriter from "@/components/shared/TypeWriter";
@@ -61,6 +62,11 @@ export default function Hero() {
       id="hero"
       className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background-deep"
     >
+      {/* Background layer: AI-generated image */}
+      <div className="absolute inset-0 z-0">
+        <Image src="/images/hero-bg.png" alt="" fill className="object-cover opacity-20" priority />
+      </div>
+
       {/* Background layer: Particles (hidden on mobile for performance) */}
       <div className="pointer-events-none absolute inset-0 hidden md:block">
         <ParticleField

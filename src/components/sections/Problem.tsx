@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
 import { X, Check } from "lucide-react";
 import SectionWrapper from "@/components/shared/SectionWrapper";
@@ -188,7 +189,12 @@ function DashboardMock() {
 
 export default function Problem() {
   return (
-    <SectionWrapper className="px-4 py-20 sm:px-6 lg:px-8">
+    <SectionWrapper className="relative overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
+      {/* Background layer: AI-generated image */}
+      <div className="absolute inset-0 z-0">
+        <Image src="/images/problem-bg.png" alt="" fill className="object-cover opacity-10" />
+      </div>
+
       {/* Section heading */}
       <h2 className="mb-12 text-center font-heading text-[28px] font-bold text-foreground sm:text-[36px]">
         El problema que resolvemos
