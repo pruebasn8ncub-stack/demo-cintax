@@ -15,7 +15,7 @@ import {
   Send,
   Bot,
   ArrowRight,
-  ChevronRight,
+  MoveRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import SectionWrapper from "@/components/shared/SectionWrapper";
@@ -24,16 +24,13 @@ import { cn } from "@/lib/utils";
 
 /* ── Data ── */
 
-interface Channel { icon: LucideIcon; label: string; dotColor: string }
-interface ToolItem { icon: LucideIcon; label: string }
-
-const channels: Channel[] = [
+const channels: { icon: LucideIcon; label: string; dotColor: string }[] = [
   { icon: MessageCircle, label: "WhatsApp", dotColor: "#22C55E" },
   { icon: Globe, label: "Web Chat", dotColor: "#F59E0B" },
   { icon: Mail, label: "Email", dotColor: "#8B5CF6" },
 ];
 
-const tools: ToolItem[] = [
+const tools: { icon: LucideIcon; label: string }[] = [
   { icon: Search, label: "Normativa SII" },
   { icon: Calculator, label: "Cálculos" },
   { icon: FileText, label: "Reportes" },
@@ -44,51 +41,6 @@ const tools: ToolItem[] = [
 
 const techStack = ["Next.js", "Claude", "n8n", "Evolution API", "TypeScript", "Tailwind"];
 
-/* ── Animated Dot ── */
-function PulseDot({ color = "#F59E0B", size = 8 }: { color?: string; size?: number }) {
-  return (
-    <span className="relative flex items-center justify-center" style={{ width: size * 2, height: size * 2 }}>
-      <span
-        className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-40"
-        style={{ backgroundColor: color }}
-      />
-      <span
-        className="relative inline-flex rounded-full"
-        style={{ backgroundColor: color, width: size, height: size }}
-      />
-    </span>
-  );
-}
-
-/* ── Dashed Line with traveling dot ── */
-function DashedFlow({ direction = "horizontal", className }: { direction?: "horizontal" | "diagonal-up" | "diagonal-down"; className?: string }) {
-  return (
-    <div className={cn("relative overflow-hidden", className)}>
-      {/* Dashed line */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: direction === "horizontal"
-            ? "repeating-linear-gradient(90deg, #F59E0B 0px, #F59E0B 6px, transparent 6px, transparent 12px)"
-            : undefined,
-          height: direction === "horizontal" ? 2 : undefined,
-          top: direction === "horizontal" ? "50%" : undefined,
-          transform: direction === "horizontal" ? "translateY(-50%)" : undefined,
-        }}
-      />
-      {/* Traveling dot */}
-      <div
-        className="absolute h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_rgba(245,158,11,0.8)]"
-        style={{
-          top: "50%",
-          transform: "translateY(-50%)",
-          animation: "travel-dot 2s linear infinite",
-        }}
-      />
-    </div>
-  );
-}
-
 /* ── Main Component ── */
 
 export default function Architecture() {
@@ -98,159 +50,148 @@ export default function Architecture() {
   return (
     <SectionWrapper className="px-4 py-20 sm:px-6 lg:px-8">
       <style>{`
-        @keyframes travel-dot {
-          0% { left: 0; }
-          100% { left: calc(100% - 8px); }
+        @keyframes flow-right {
+          0% { left: -10px; opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { left: calc(100% - 2px); opacity: 0; }
         }
-        @keyframes dash-scroll {
+        .flow-line {
+          position: relative;
+          height: 2px;
+          background: repeating-linear-gradient(90deg, var(--line-color, #F59E0B) 0 6px, transparent 6px 12px);
+          background-size: 12px 2px;
+          animation: dash-move 0.8s linear infinite;
+        }
+        @keyframes dash-move {
           0% { background-position: 0 0; }
-          100% { background-position: 24px 0; }
+          100% { background-position: 12px 0; }
         }
-        .animated-dash-h {
-          height: 2px;
-          background: repeating-linear-gradient(90deg, #F59E0B 0px, #F59E0B 6px, transparent 6px, transparent 12px);
-          animation: dash-scroll 0.8s linear infinite;
-        }
-        .animated-dash-h-purple {
-          height: 2px;
-          background: repeating-linear-gradient(90deg, #8B5CF6 0px, #8B5CF6 6px, transparent 6px, transparent 12px);
-          animation: dash-scroll 0.8s linear infinite;
+        .flow-line::after {
+          content: '';
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: var(--line-color, #F59E0B);
+          box-shadow: 0 0 10px var(--line-color, #F59E0B);
+          top: -3px;
+          animation: flow-right 2s linear infinite;
         }
       `}</style>
 
       <section id="architecture" ref={sectionRef}>
-        {/* Title */}
         <h2 className="mb-14 text-center font-heading text-[28px] font-bold text-foreground sm:text-[36px]">
-          Arquitectura del{" "}
-          <span className="text-primary">Sistema</span>
+          Arquitectura del <span className="text-primary">Sistema</span>
         </h2>
 
-        {/* ═══ DESKTOP LAYOUT ═══ */}
-        <div className="mx-auto hidden max-w-6xl lg:block">
-          {/* Row layout: Channels | Merge Zone | n8n | Arrow | Agent */}
-          <div className="flex items-stretch gap-0">
+        {/* ═══ DESKTOP — 3 rows showing merge pattern ═══ */}
+        <div className="mx-auto hidden max-w-5xl lg:block">
+          {/*
+            Grid layout:
+            Col 1 (Channels)  |  Col 2 (Lines)  |  Col 3 (n8n)  |  Col 4 (Line)  |  Col 5 (Agent)
 
-            {/* ── LEFT: Channels ── */}
+            Row 1: WhatsApp → diagonal line ↘
+            Row 2: Web Chat → straight line → n8n → straight line → Agent
+            Row 3: Email → diagonal line ↗
+          */}
+          <div
+            className="grid items-center gap-y-3"
+            style={{
+              gridTemplateColumns: "220px 100px 180px 1fr 300px",
+              gridTemplateRows: "auto auto auto",
+            }}
+          >
+            {/* ── Row 1: WhatsApp + top diagonal ── */}
             <motion.div
-              className="flex w-[220px] shrink-0 flex-col gap-3 self-center"
-              initial={{ opacity: 0, x: -40 }}
+              style={{ gridColumn: 1, gridRow: 1 }}
+              initial={{ opacity: 0, x: -30 }}
               animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ type: "spring", stiffness: 80, damping: 18, delay: 0.1 }}
+              transition={{ delay: 0.1, type: "spring", stiffness: 80, damping: 18 }}
             >
-              <p className="mb-1 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                Canales
-              </p>
-              {channels.map((ch) => {
-                const Icon = ch.icon;
-                return (
-                  <GlassCard key={ch.label} className="flex items-center gap-3 px-4 py-3" hover>
-                    <Icon className="h-5 w-5 text-foreground" />
-                    <span className="font-mono text-sm text-foreground">{ch.label}</span>
-                    <span className="ml-auto h-2.5 w-2.5 rounded-full" style={{ backgroundColor: ch.dotColor }} />
-                  </GlassCard>
-                );
-              })}
+              <GlassCard className="flex items-center gap-3 px-4 py-3" hover>
+                <MessageCircle className="h-5 w-5 text-foreground" />
+                <span className="font-mono text-sm text-foreground">WhatsApp</span>
+                <span className="ml-auto h-2.5 w-2.5 rounded-full bg-[#22C55E]" />
+              </GlassCard>
             </motion.div>
 
-            {/* ── MERGE ZONE: 3 lines converge to 1 ── */}
+            {/* Top diagonal: SVG line curving down-right */}
             <motion.div
-              className="flex w-[140px] shrink-0 flex-col items-stretch justify-center self-center"
+              style={{ gridColumn: 2, gridRow: "1 / 3" }}
+              className="flex items-end justify-center"
               initial={{ opacity: 0 }}
               animate={isInView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
             >
-              {/* Top branch: line from WhatsApp level angling down to center */}
-              <div className="flex items-end justify-end" style={{ height: 52 }}>
-                <div className="relative h-full w-full">
-                  <svg viewBox="0 0 140 52" className="absolute inset-0 h-full w-full" fill="none">
-                    <path d="M 0 10 Q 70 10, 130 46" stroke="#F59E0B" strokeWidth="2" strokeDasharray="6 4" strokeLinecap="round">
-                      <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1s" repeatCount="indefinite" />
-                    </path>
-                    <circle r="3" fill="#22C55E">
-                      <animateMotion dur="2s" repeatCount="indefinite" path="M 0 10 Q 70 10, 130 46" />
-                    </circle>
-                  </svg>
-                </div>
-              </div>
-
-              {/* Middle branch: straight line */}
-              <div className="flex items-center" style={{ height: 24 }}>
-                <div className="relative h-[2px] w-full">
-                  <div className="animated-dash-h absolute inset-0" />
-                  <div
-                    className="absolute h-2.5 w-2.5 rounded-full bg-primary shadow-[0_0_10px_rgba(245,158,11,0.8)]"
-                    style={{ top: -3, animation: "travel-dot 1.8s linear infinite" }}
-                  />
-                </div>
-              </div>
-
-              {/* Bottom branch: line from Email level angling up to center */}
-              <div className="flex items-start justify-end" style={{ height: 52 }}>
-                <div className="relative h-full w-full">
-                  <svg viewBox="0 0 140 52" className="absolute inset-0 h-full w-full" fill="none">
-                    <path d="M 0 42 Q 70 42, 130 6" stroke="#8B5CF6" strokeWidth="2" strokeDasharray="6 4" strokeLinecap="round">
-                      <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1s" repeatCount="indefinite" />
-                    </path>
-                    <circle r="3" fill="#8B5CF6">
-                      <animateMotion dur="2s" repeatCount="indefinite" path="M 0 42 Q 70 42, 130 6" />
-                    </circle>
-                  </svg>
-                </div>
-              </div>
+              <svg viewBox="0 0 100 80" className="h-20 w-full" fill="none" preserveAspectRatio="none">
+                <path d="M 0 15 Q 50 15, 95 65" stroke="#F59E0B" strokeWidth="2" strokeDasharray="6 4" strokeLinecap="round">
+                  <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="0.8s" repeatCount="indefinite" />
+                </path>
+                <circle r="4" fill="#22C55E" filter="url(#glow-g)">
+                  <animateMotion dur="2s" repeatCount="indefinite" path="M 0 15 Q 50 15, 95 65" />
+                </circle>
+                <defs>
+                  <filter id="glow-g"><feGaussianBlur stdDeviation="2" /><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+                </defs>
+              </svg>
             </motion.div>
 
-            {/* ── Merge point + line to n8n ── */}
+            {/* ── Row 2: Web Chat + straight line + n8n + straight line + Agent ── */}
             <motion.div
-              className="flex w-[40px] shrink-0 items-center justify-center self-center"
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.4, delay: 0.7 }}
+              style={{ gridColumn: 1, gridRow: 2 }}
+              initial={{ opacity: 0, x: -30 }}
+              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ delay: 0.2, type: "spring", stiffness: 80, damping: 18 }}
             >
-              <PulseDot color="#F59E0B" size={6} />
+              <GlassCard className="flex items-center gap-3 px-4 py-3" hover>
+                <Globe className="h-5 w-5 text-foreground" />
+                <span className="font-mono text-sm text-foreground">Web Chat</span>
+                <span className="ml-auto h-2.5 w-2.5 rounded-full bg-[#F59E0B]" />
+              </GlassCard>
             </motion.div>
 
-            {/* ── CENTER: n8n ── */}
+            {/* Middle straight line → n8n (handled by the diagonal SVGs meeting at row 2) */}
+
+            {/* n8n card spans row 1-3 in col 3 */}
             <motion.div
-              className="shrink-0 self-center"
+              style={{ gridColumn: 3, gridRow: "1 / 4" }}
+              className="flex items-center justify-center"
               initial={{ opacity: 0, scale: 0.7 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ type: "spring", stiffness: 100, damping: 16, delay: 0.5 }}
+              transition={{ delay: 0.5, type: "spring", stiffness: 100, damping: 16 }}
             >
-              <GlassCard glow="primary" className="flex w-[170px] flex-col items-center gap-3 px-5 py-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/30">
-                  <Cpu className="h-7 w-7 text-primary" />
+              <GlassCard glow="primary" className="flex w-full flex-col items-center gap-3 px-5 py-7">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/30">
+                  <Cpu className="h-8 w-8 text-primary" />
                 </div>
-                <span className="font-heading text-lg font-bold text-foreground">n8n</span>
+                <span className="font-heading text-xl font-bold text-foreground">n8n</span>
                 <span className="font-mono text-[10px] text-muted-foreground">Orquestador</span>
                 <div className="h-1 w-10 rounded-full" style={{ background: "linear-gradient(90deg, #F59E0B, #8B5CF6)" }} />
               </GlassCard>
             </motion.div>
 
-            {/* ── Arrow: n8n → Agent ── */}
+            {/* Straight line: n8n → Agent (col 4, spans all rows centered) */}
             <motion.div
-              className="flex flex-1 items-center self-center px-2"
+              style={{ gridColumn: 4, gridRow: "1 / 4" }}
+              className="flex items-center px-3"
               initial={{ opacity: 0 }}
               animate={isInView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.9 }}
+              transition={{ delay: 0.9, duration: 0.5 }}
             >
-              <div className="relative h-[2px] flex-1">
-                <div className="animated-dash-h absolute inset-0" />
-                <div
-                  className="absolute h-3 w-3 rounded-full bg-primary shadow-[0_0_12px_rgba(245,158,11,0.9)]"
-                  style={{ top: -5, animation: "travel-dot 1.5s linear infinite" }}
-                />
-              </div>
-              <ChevronRight className="h-6 w-6 shrink-0 text-primary" />
+              <div className="flow-line flex-1" style={{ "--line-color": "#F59E0B" } as React.CSSProperties} />
+              <MoveRight className="ml-1 h-5 w-5 shrink-0 text-primary" />
             </motion.div>
 
-            {/* ── RIGHT: Claude Agent ── */}
+            {/* Agent card spans row 1-3 in col 5 */}
             <motion.div
-              className="w-[300px] shrink-0 self-center"
+              style={{ gridColumn: 5, gridRow: "1 / 4" }}
+              className="flex items-center"
               initial={{ opacity: 0, x: 40 }}
               animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ type: "spring", stiffness: 80, damping: 18, delay: 0.7 }}
+              transition={{ delay: 0.7, type: "spring", stiffness: 80, damping: 18 }}
             >
-              <GlassCard glow="secondary" className="px-5 py-5">
+              <GlassCard glow="secondary" className="w-full px-5 py-5">
                 <div className="mb-3 flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/10 ring-1 ring-secondary/30">
                     <Bot className="h-6 w-6 text-secondary" />
@@ -273,10 +214,50 @@ export default function Architecture() {
                 </div>
               </GlassCard>
             </motion.div>
+
+            {/* ── Row 3: Email + bottom diagonal ── */}
+            <motion.div
+              style={{ gridColumn: 1, gridRow: 3 }}
+              initial={{ opacity: 0, x: -30 }}
+              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ delay: 0.3, type: "spring", stiffness: 80, damping: 18 }}
+            >
+              <GlassCard className="flex items-center gap-3 px-4 py-3" hover>
+                <Mail className="h-5 w-5 text-foreground" />
+                <span className="font-mono text-sm text-foreground">Email</span>
+                <span className="ml-auto h-2.5 w-2.5 rounded-full bg-[#8B5CF6]" />
+              </GlassCard>
+            </motion.div>
+
+            {/* Bottom diagonal: SVG line curving up-right */}
+            <motion.div
+              style={{ gridColumn: 2, gridRow: "2 / 4" }}
+              className="flex items-start justify-center"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+              transition={{ delay: 0.6, duration: 0.5 }}
+            >
+              <svg viewBox="0 0 100 80" className="h-20 w-full" fill="none" preserveAspectRatio="none">
+                <path d="M 0 65 Q 50 65, 95 15" stroke="#8B5CF6" strokeWidth="2" strokeDasharray="6 4" strokeLinecap="round">
+                  <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="0.8s" repeatCount="indefinite" />
+                </path>
+                <circle r="4" fill="#8B5CF6" filter="url(#glow-p)">
+                  <animateMotion dur="2s" repeatCount="indefinite" path="M 0 65 Q 50 65, 95 15" />
+                </circle>
+                <defs>
+                  <filter id="glow-p"><feGaussianBlur stdDeviation="2" /><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+                </defs>
+              </svg>
+            </motion.div>
+          </div>
+
+          {/* "CANALES" label */}
+          <div className="mt-2" style={{ marginLeft: 60 }}>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Canales</p>
           </div>
         </div>
 
-        {/* ═══ MOBILE LAYOUT ═══ */}
+        {/* ═══ MOBILE ═══ */}
         <div className="mx-auto flex max-w-sm flex-col items-center gap-3 lg:hidden">
           <motion.div
             className="flex w-full flex-col gap-2"
@@ -321,7 +302,7 @@ export default function Architecture() {
           </GlassCard>
         </div>
 
-        {/* Tech Stack Badges */}
+        {/* Tech Stack */}
         <motion.div
           className="mx-auto mt-14 flex max-w-3xl flex-wrap items-center justify-center gap-3"
           initial={{ opacity: 0 }}
