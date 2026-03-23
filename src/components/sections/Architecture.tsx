@@ -13,6 +13,7 @@ import {
   Calendar,
   Database,
   Send,
+  Bot,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import SectionWrapper from "@/components/shared/SectionWrapper";
@@ -27,12 +28,8 @@ interface Channel {
   dotColor: string;
 }
 
-interface Tool {
+interface ToolItem {
   icon: LucideIcon;
-  label: string;
-}
-
-interface TechBadge {
   label: string;
 }
 
@@ -44,70 +41,37 @@ const channels: Channel[] = [
   { icon: Mail, label: "Email", dotColor: "#8B5CF6" },
 ];
 
-const tools: Tool[] = [
-  { icon: Search, label: "Buscar SII" },
-  { icon: Calculator, label: "Calcular" },
+const tools: ToolItem[] = [
+  { icon: Search, label: "Normativa SII" },
+  { icon: Calculator, label: "Cálculos" },
   { icon: FileText, label: "Reportes" },
-  { icon: Calendar, label: "Agendar" },
-  { icon: Database, label: "Supabase" },
-  { icon: Send, label: "Resend" },
+  { icon: Calendar, label: "Agenda" },
+  { icon: Database, label: "Datos" },
+  { icon: Send, label: "Email" },
 ];
 
-const techStack: TechBadge[] = [
-  { label: "Next.js" },
-  { label: "Claude" },
-  { label: "n8n" },
-  { label: "Evolution API" },
-  { label: "TypeScript" },
-  { label: "Tailwind" },
-];
+const techStack = ["Next.js", "Claude", "n8n", "Evolution API", "TypeScript", "Tailwind"];
 
 /* ── Animation Variants ── */
 
+const containerVariants: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.15 } },
+};
+
 const leftVariants: Variants = {
-  hidden: { opacity: 0, x: -60 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { type: "spring", stiffness: 80, damping: 18, staggerChildren: 0.1 },
-  },
+  hidden: { opacity: 0, x: -40 },
+  visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 80, damping: 18 } },
 };
 
 const centerVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.7 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { type: "spring", stiffness: 100, damping: 16, delay: 0.2 },
-  },
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 100, damping: 16 } },
 };
 
 const rightVariants: Variants = {
-  hidden: { opacity: 0, x: 60 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { type: "spring", stiffness: 80, damping: 18, delay: 0.3, staggerChildren: 0.08 },
-  },
-};
-
-const childFadeIn: Variants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
-};
-
-const svgVariants: Variants = {
-  hidden: { pathLength: 0, opacity: 0 },
-  visible: {
-    pathLength: 1,
-    opacity: 1,
-    transition: { duration: 1, delay: 0.6, ease: "easeInOut" },
-  },
-};
-
-const badgeContainerVariants: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.8 } },
+  hidden: { opacity: 0, x: 40 },
+  visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 80, damping: 18 } },
 };
 
 const badgeVariants: Variants = {
@@ -115,125 +79,30 @@ const badgeVariants: Variants = {
   visible: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 200, damping: 18 } },
 };
 
-/* ── CSS for SVG animations ── */
+/* ── Animated Connection Arrow ── */
 
-const archStyles = `
-@keyframes arch-dash {
-  to { stroke-dashoffset: -24; }
-}
-@keyframes arch-travel {
-  0% { offset-distance: 0%; }
-  100% { offset-distance: 100%; }
-}
-`;
-
-/* ── Channel Card ── */
-
-function ChannelCard({ channel }: { channel: Channel }) {
-  const Icon = channel.icon;
+function AnimatedArrow({ className, delay = 0 }: { className?: string; delay?: number }) {
   return (
-    <motion.div variants={childFadeIn}>
-      <GlassCard className="flex items-center gap-3 px-4 py-3" hover>
-        <Icon className="h-5 w-5 text-foreground" />
-        <span className="font-mono text-sm text-foreground">{channel.label}</span>
-        <span
-          className="ml-auto h-2.5 w-2.5 rounded-full"
-          style={{ backgroundColor: channel.dotColor }}
+    <motion.div
+      className={cn("flex items-center", className)}
+      initial={{ opacity: 0, scaleX: 0 }}
+      animate={{ opacity: 1, scaleX: 1 }}
+      transition={{ duration: 0.6, delay, ease: "easeOut" }}
+      style={{ transformOrigin: "left" }}
+    >
+      <div className="relative h-[2px] w-full bg-gradient-to-r from-primary/60 to-primary">
+        {/* Animated dot traveling along the line */}
+        <div
+          className="absolute top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-primary shadow-[0_0_8px_rgba(245,158,11,0.6)]"
+          style={{
+            animation: "arch-travel-horizontal 2s linear infinite",
+            animationDelay: `${delay}s`,
+          }}
         />
-      </GlassCard>
+      </div>
+      {/* Arrow tip */}
+      <div className="h-0 w-0 shrink-0 border-y-[5px] border-l-[8px] border-y-transparent border-l-primary" />
     </motion.div>
-  );
-}
-
-/* ── Tool Badge ── */
-
-function ToolBadge({ tool }: { tool: Tool }) {
-  const Icon = tool.icon;
-  return (
-    <motion.div variants={childFadeIn}>
-      <GlassCard className="flex flex-col items-center gap-1.5 px-2 py-2.5">
-        <Icon className="h-4 w-4 text-primary" />
-        <span className="font-mono text-[10px] text-muted-foreground">{tool.label}</span>
-      </GlassCard>
-    </motion.div>
-  );
-}
-
-/* ── SVG Connection Lines (between columns) ── */
-
-function ConnectionSVG() {
-  /* Paths from left column to center, and center to right */
-  const leftPaths = [
-    "M0 30 C60 30, 40 80, 100 80",
-    "M0 80 C60 80, 40 80, 100 80",
-    "M0 130 C60 130, 40 80, 100 80",
-  ];
-
-  const rightPaths = [
-    "M0 80 C60 80, 40 40, 100 40",
-    "M0 80 C60 80, 40 120, 100 120",
-  ];
-
-  return (
-    <>
-      {/* Left-to-center lines */}
-      <svg
-        className="pointer-events-none absolute left-[calc(33.33%-8px)] top-1/2 hidden h-[160px] w-[100px] -translate-x-full -translate-y-1/2 lg:block"
-        style={{ overflow: "visible" }}
-      >
-        {leftPaths.map((d, i) => (
-          <g key={`left-${i}`}>
-            <motion.path
-              d={d}
-              fill="none"
-              stroke="#F59E0B"
-              strokeWidth={2}
-              strokeDasharray="8 4"
-              variants={svgVariants}
-              style={{ animation: "arch-dash 1s linear infinite" }}
-            />
-            <circle
-              r={3}
-              fill="#F59E0B"
-              style={{
-                offsetPath: `path('${d}')`,
-                animation: "arch-travel 2s linear infinite",
-                animationDelay: `${i * 0.3}s`,
-              }}
-            />
-          </g>
-        ))}
-      </svg>
-
-      {/* Center-to-right lines */}
-      <svg
-        className="pointer-events-none absolute right-[calc(33.33%-8px)] top-1/2 hidden h-[160px] w-[100px] translate-x-full -translate-y-1/2 lg:block"
-        style={{ overflow: "visible" }}
-      >
-        {rightPaths.map((d, i) => (
-          <g key={`right-${i}`}>
-            <motion.path
-              d={d}
-              fill="none"
-              stroke="#F59E0B"
-              strokeWidth={2}
-              strokeDasharray="8 4"
-              variants={svgVariants}
-              style={{ animation: "arch-dash 1s linear infinite" }}
-            />
-            <circle
-              r={3}
-              fill="#F59E0B"
-              style={{
-                offsetPath: `path('${d}')`,
-                animation: "arch-travel 2s linear infinite",
-                animationDelay: `${i * 0.4}s`,
-              }}
-            />
-          </g>
-        ))}
-      </svg>
-    </>
   );
 }
 
@@ -241,70 +110,92 @@ function ConnectionSVG() {
 
 export default function Architecture() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
 
   return (
     <SectionWrapper className="px-4 py-20 sm:px-6 lg:px-8">
-      <style>{archStyles}</style>
+      <style>{`
+        @keyframes arch-travel-horizontal {
+          0% { left: 0%; }
+          100% { left: calc(100% - 8px); }
+        }
+      `}</style>
 
       <section id="architecture" ref={sectionRef}>
         {/* Title */}
-        <h2 className="mb-12 text-center font-heading text-[28px] font-bold text-foreground sm:text-[36px]">
+        <h2 className="mb-14 text-center font-heading text-[28px] font-bold text-foreground sm:text-[36px]">
           Arquitectura del{" "}
           <span className="text-primary">Sistema</span>
         </h2>
 
-        {/* 3-Column Layout */}
-        <div className="relative mx-auto grid max-w-5xl grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-6">
-          {/* Left: Channel Cards */}
-          <motion.div
-            className="flex flex-col gap-4"
-            variants={leftVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-          >
-            <p className="mb-2 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground">
+        {/* Desktop: 5-column grid with arrows between */}
+        <motion.div
+          className="mx-auto hidden max-w-6xl items-center gap-0 lg:grid"
+          style={{ gridTemplateColumns: "1fr auto 1fr auto 1fr" }}
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
+          {/* Column 1: Channels */}
+          <motion.div className="flex flex-col gap-3" variants={leftVariants}>
+            <p className="mb-2 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
               Canales
             </p>
-            {channels.map((ch) => (
-              <ChannelCard key={ch.label} channel={ch} />
-            ))}
+            {channels.map((ch) => {
+              const Icon = ch.icon;
+              return (
+                <GlassCard key={ch.label} className="flex items-center gap-3 px-4 py-3" hover>
+                  <Icon className="h-5 w-5 text-foreground" />
+                  <span className="font-mono text-sm text-foreground">{ch.label}</span>
+                  <span
+                    className="ml-auto h-2.5 w-2.5 rounded-full"
+                    style={{ backgroundColor: ch.dotColor }}
+                  />
+                </GlassCard>
+              );
+            })}
           </motion.div>
 
-          {/* Center: n8n Orchestrator */}
+          {/* Arrow: Channels → n8n */}
           <motion.div
-            className="flex items-center justify-center"
+            className="flex flex-col items-center justify-center px-4"
             variants={centerVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
           >
+            <AnimatedArrow className="w-20" delay={0.6} />
+          </motion.div>
+
+          {/* Column 2: n8n Orchestrator */}
+          <motion.div className="flex items-center justify-center" variants={centerVariants}>
             <GlassCard
               glow="primary"
-              className="flex w-full max-w-[220px] flex-col items-center gap-3 px-6 py-8"
+              className="flex w-full max-w-[200px] flex-col items-center gap-3 px-6 py-8"
             >
-              <Cpu className="h-10 w-10 text-primary" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/30">
+                <Cpu className="h-8 w-8 text-primary" />
+              </div>
               <span className="font-heading text-xl font-bold text-foreground">n8n</span>
-              <span className="font-mono text-xs text-muted-foreground">Orquestador</span>
+              <span className="font-mono text-[11px] text-muted-foreground">Orquestador</span>
               <div
-                className="mt-2 h-1 w-16 rounded-full"
-                style={{
-                  background: "linear-gradient(90deg, #F59E0B, #8B5CF6)",
-                }}
+                className="mt-1 h-1 w-12 rounded-full"
+                style={{ background: "linear-gradient(90deg, #F59E0B, #8B5CF6)" }}
               />
             </GlassCard>
           </motion.div>
 
-          {/* Right: Claude AI Agent + Tools */}
+          {/* Arrow: n8n → Agent */}
           <motion.div
-            className="flex flex-col gap-4"
-            variants={rightVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
+            className="flex flex-col items-center justify-center px-4"
+            variants={centerVariants}
           >
+            <AnimatedArrow className="w-20" delay={0.9} />
+          </motion.div>
+
+          {/* Column 3: Claude AI Agent + Tools */}
+          <motion.div variants={rightVariants}>
             <GlassCard glow="secondary" className="px-5 py-5">
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary/20">
-                  <Cpu className="h-5 w-5 text-secondary" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/10 ring-1 ring-secondary/30">
+                  <Bot className="h-6 w-6 text-secondary" />
                 </div>
                 <div>
                   <p className="font-heading text-sm font-bold text-foreground">Claude AI Agent</p>
@@ -312,36 +203,114 @@ export default function Architecture() {
                 </div>
               </div>
 
-              {/* 2x3 Tool Grid */}
               <div className="grid grid-cols-3 gap-2">
-                {tools.map((tool) => (
-                  <ToolBadge key={tool.label} tool={tool} />
-                ))}
+                {tools.map((tool) => {
+                  const Icon = tool.icon;
+                  return (
+                    <div
+                      key={tool.label}
+                      className="glass flex flex-col items-center gap-1 rounded-lg px-2 py-2"
+                    >
+                      <Icon className="h-4 w-4 text-primary" />
+                      <span className="font-mono text-[9px] text-muted-foreground">{tool.label}</span>
+                    </div>
+                  );
+                })}
               </div>
             </GlassCard>
           </motion.div>
+        </motion.div>
 
-          {/* SVG Connection Lines (desktop only) */}
-          <ConnectionSVG />
-        </div>
+        {/* Mobile: Vertical stack with down arrows */}
+        <motion.div
+          className="mx-auto flex max-w-sm flex-col items-center gap-4 lg:hidden"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
+          {/* Channels */}
+          <motion.div className="flex w-full flex-col gap-3" variants={leftVariants}>
+            <p className="mb-1 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+              Canales
+            </p>
+            {channels.map((ch) => {
+              const Icon = ch.icon;
+              return (
+                <GlassCard key={ch.label} className="flex items-center gap-3 px-4 py-3">
+                  <Icon className="h-5 w-5 text-foreground" />
+                  <span className="font-mono text-sm text-foreground">{ch.label}</span>
+                  <span
+                    className="ml-auto h-2.5 w-2.5 rounded-full"
+                    style={{ backgroundColor: ch.dotColor }}
+                  />
+                </GlassCard>
+              );
+            })}
+          </motion.div>
+
+          {/* Down arrow */}
+          <div className="flex flex-col items-center">
+            <div className="h-8 w-[2px] bg-gradient-to-b from-primary/40 to-primary" />
+            <div className="h-0 w-0 border-x-[5px] border-t-[8px] border-x-transparent border-t-primary" />
+          </div>
+
+          {/* n8n */}
+          <motion.div variants={centerVariants}>
+            <GlassCard glow="primary" className="flex flex-col items-center gap-2 px-8 py-6">
+              <Cpu className="h-8 w-8 text-primary" />
+              <span className="font-heading text-lg font-bold text-foreground">n8n</span>
+              <span className="font-mono text-[10px] text-muted-foreground">Orquestador</span>
+            </GlassCard>
+          </motion.div>
+
+          {/* Down arrow */}
+          <div className="flex flex-col items-center">
+            <div className="h-8 w-[2px] bg-gradient-to-b from-primary/40 to-primary" />
+            <div className="h-0 w-0 border-x-[5px] border-t-[8px] border-x-transparent border-t-primary" />
+          </div>
+
+          {/* Agent */}
+          <motion.div className="w-full" variants={rightVariants}>
+            <GlassCard glow="secondary" className="px-5 py-5">
+              <div className="mb-3 flex items-center gap-3">
+                <Bot className="h-6 w-6 text-secondary" />
+                <div>
+                  <p className="font-heading text-sm font-bold text-foreground">Claude AI Agent</p>
+                  <p className="font-mono text-[10px] text-muted-foreground">Razonamiento + Tools</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {tools.map((tool) => {
+                  const Icon = tool.icon;
+                  return (
+                    <div key={tool.label} className="glass flex flex-col items-center gap-1 rounded-lg px-2 py-2">
+                      <Icon className="h-4 w-4 text-primary" />
+                      <span className="font-mono text-[9px] text-muted-foreground">{tool.label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </GlassCard>
+          </motion.div>
+        </motion.div>
 
         {/* Tech Stack Badges */}
         <motion.div
           className="mx-auto mt-14 flex max-w-3xl flex-wrap items-center justify-center gap-3"
-          variants={badgeContainerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06, delayChildren: 1 } } }}
         >
-          {techStack.map((tech) => (
+          {techStack.map((label) => (
             <motion.span
-              key={tech.label}
+              key={label}
               variants={badgeVariants}
               className={cn(
                 "glass rounded-full px-4 py-1.5",
                 "font-mono text-xs text-muted-foreground"
               )}
             >
-              {tech.label}
+              {label}
             </motion.span>
           ))}
         </motion.div>
