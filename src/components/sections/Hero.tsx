@@ -2,11 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import TypeWriter from "@/components/shared/TypeWriter";
-import ParticleField from "@/components/shared/ParticleField";
 import { cn } from "@/lib/utils";
 import { AnimatedBadge } from "@/components/ui/animated-badge";
 import { ShinyButton } from "@/components/ui/shiny-button";
@@ -20,6 +18,14 @@ const HeroSequenceLazy = dynamic(
   () =>
     import("@/remotion/HeroSequence").then((mod) => ({
       default: mod.HeroSequence,
+    })),
+  { ssr: false }
+);
+
+const HeroBackgroundLazy = dynamic(
+  () =>
+    import("@/remotion/HeroBackground").then((mod) => ({
+      default: mod.HeroBackground,
     })),
   { ssr: false }
 );
@@ -79,27 +85,32 @@ export default function Hero() {
       id="hero"
       className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background-deep"
     >
-      {/* Background layer: AI-generated image */}
-      <div className="absolute inset-0 z-0">
-        <Image src="/images/hero-bg.png" alt="" fill className="object-cover opacity-20" priority />
+      {/* Background layer: Remotion animated data flow */}
+      <div className="pointer-events-none absolute inset-0 z-0">
+        {playerReady && (
+          <RemotionPlayer
+            component={HeroBackgroundLazy}
+            durationInFrames={900}
+            fps={30}
+            compositionWidth={1920}
+            compositionHeight={1080}
+            loop
+            autoPlay
+            controls={false}
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        )}
       </div>
 
-      {/* Background layer: Particles (hidden on mobile for performance) */}
-      <div className="pointer-events-none absolute inset-0 hidden md:block">
-        <ParticleField
-          count={50}
-          colors={["#F59E0B", "#8B5CF6"]}
-          speed={0.5}
-        />
-      </div>
-
-      {/* Background layer: Scanline overlay */}
+      {/* Vignette overlay */}
       <div
         className="pointer-events-none absolute inset-0 z-[1]"
         style={{
           background:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 0, 0.03) 2px, rgba(0, 255, 0, 0.03) 4px)",
-          opacity: 0.03,
+            "radial-gradient(ellipse at center, transparent 30%, rgba(11,17,32,0.7) 100%)",
         }}
       />
 
