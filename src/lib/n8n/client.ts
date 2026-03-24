@@ -1,4 +1,4 @@
-const N8N_TIMEOUT_MS = 5_000;
+const N8N_TIMEOUT_MS = 15_000;
 
 interface N8nSuccessResponse {
   error?: false;

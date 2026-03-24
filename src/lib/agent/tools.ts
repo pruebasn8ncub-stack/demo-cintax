@@ -25,88 +25,6 @@ export const agentTools: Tool[] = [
     },
   },
   {
-    name: "generateReport",
-    description:
-      "Genera un reporte financiero del restaurante basado en los datos contables. Puede generar reportes de ingresos, gastos, utilidad y tendencias para un período específico.",
-    input_schema: {
-      type: "object" as const,
-      properties: {
-        reportType: {
-          type: "string",
-          enum: ["mensual", "trimestral", "semestral", "anual"],
-          description: "Tipo de reporte según el período que abarca",
-        },
-        period: {
-          type: "string",
-          description:
-            "Período del reporte en formato 'YYYY-MM' para mensual o 'YYYY' para anual (ej: '2026-03', '2025')",
-        },
-        includeProjections: {
-          type: "boolean",
-          description:
-            "Si se deben incluir proyecciones financieras basadas en tendencias históricas",
-        },
-      },
-      required: ["reportType", "period"],
-    },
-  },
-  {
-    name: "scheduleConsultation",
-    description:
-      "Agenda una consulta con María González, la contadora del restaurante. Verifica disponibilidad y reserva un horario dentro del horario laboral (Lun-Vie 9:00-18:00).",
-    input_schema: {
-      type: "object" as const,
-      properties: {
-        date: {
-          type: "string",
-          description: "Fecha deseada para la consulta en formato YYYY-MM-DD",
-        },
-        time: {
-          type: "string",
-          description: "Hora deseada en formato HH:MM (ej: '10:00', '15:30')",
-        },
-        subject: {
-          type: "string",
-          description:
-            "Tema o motivo de la consulta (ej: 'Revisión F29 marzo', 'Consulta devolución IVA')",
-        },
-        duration: {
-          type: "number",
-          description: "Duración en minutos (30, 60 o 90). Por defecto: 60",
-        },
-      },
-      required: ["date", "time", "subject"],
-    },
-  },
-  {
-    name: "sendEmail",
-    description:
-      "Envía un correo electrónico en nombre del restaurante. Útil para comunicarse con la contadora, proveedores, el SII u otras entidades.",
-    input_schema: {
-      type: "object" as const,
-      properties: {
-        to: {
-          type: "string",
-          description: "Dirección de correo del destinatario",
-        },
-        subject: {
-          type: "string",
-          description: "Asunto del correo",
-        },
-        body: {
-          type: "string",
-          description: "Contenido del correo en texto plano",
-        },
-        priority: {
-          type: "string",
-          enum: ["alta", "normal", "baja"],
-          description: "Prioridad del correo. Por defecto: normal",
-        },
-      },
-      required: ["to", "subject", "body"],
-    },
-  },
-  {
     name: "checkProcedureStatus",
     description:
       "Consulta el estado de trámites activos ante el SII, Dirección del Trabajo u otras entidades. Muestra progreso, última actualización y próximos pasos.",
@@ -159,6 +77,39 @@ export const agentTools: Tool[] = [
       required: ["taxType", "period"],
     },
   },
+  {
+    name: "generateAndSendReport",
+    description:
+      "Genera un informe profesional en PDF (tributario, financiero o laboral) del Restaurante Don Pedro SpA y lo envía por el canal especificado (email, whatsapp o ambos). IMPORTANTE: Si el canal incluye WhatsApp, necesitas el número del usuario. Si incluye email, necesitas su dirección de correo. Pide los datos que falten antes de usar esta herramienta.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        reportType: {
+          type: "string",
+          enum: ["tributario", "financiero", "laboral"],
+          description: "Tipo de informe a generar",
+        },
+        period: {
+          type: "string",
+          description: "Período del informe (ej: 'Marzo 2026')",
+        },
+        channel: {
+          type: "string",
+          enum: ["email", "whatsapp", "both"],
+          description: "Canal de envío: email, whatsapp o both (ambos)",
+        },
+        email: {
+          type: "string",
+          description: "Dirección de correo del destinatario (requerido si channel es email o both)",
+        },
+        phone: {
+          type: "string",
+          description: "Número de WhatsApp del destinatario sin '+' (requerido si channel es whatsapp o both)",
+        },
+      },
+      required: ["reportType", "period", "channel"],
+    },
+  },
 ];
 
 // Zod schemas for server-side validation of tool inputs
@@ -168,26 +119,6 @@ export const toolInputSchemas = {
     category: z
       .enum(["iva", "renta", "laboral", "ppm", "general"])
       .optional(),
-  }),
-
-  generateReport: z.object({
-    reportType: z.enum(["mensual", "trimestral", "semestral", "anual"]),
-    period: z.string().min(4),
-    includeProjections: z.boolean().optional(),
-  }),
-
-  scheduleConsultation: z.object({
-    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    time: z.string().regex(/^\d{2}:\d{2}$/),
-    subject: z.string().min(1),
-    duration: z.number().optional(),
-  }),
-
-  sendEmail: z.object({
-    to: z.string().email({ message: "Email inválido" }),
-    subject: z.string().min(1),
-    body: z.string().min(1),
-    priority: z.enum(["alta", "normal", "baja"]).optional(),
   }),
 
   checkProcedureStatus: z.object({
@@ -200,6 +131,14 @@ export const toolInputSchemas = {
     period: z.string().min(4),
     revenue: z.number().optional(),
     expenses: z.number().optional(),
+  }),
+
+  generateAndSendReport: z.object({
+    reportType: z.enum(["tributario", "financiero", "laboral"]),
+    period: z.string().min(1),
+    channel: z.enum(["email", "whatsapp", "both"]),
+    email: z.string().optional(),
+    phone: z.string().optional(),
   }),
 } as const;
 

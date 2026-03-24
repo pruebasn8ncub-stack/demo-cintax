@@ -1,7 +1,9 @@
 import { callN8nWebhook } from "@/lib/n8n/client";
+import { generateReportPDF, buildTributarioData, buildFinancieroData, buildLaboralData } from "@/lib/pdf/report-generator";
+import { buildReportEmailHTML } from "@/lib/email/template";
+import { savePDF } from "@/lib/pdf/store";
 import {
   financialData,
-  calendarAvailability,
   activeProcedures,
   businessProfile,
 } from "@/lib/agent/mock-data";
@@ -66,159 +68,6 @@ function handleSearchRegulations(input: Record<string, unknown>): string {
     .join("\n\n");
 
   return `Se encontraron ${results.length} normativa(s). Mostrando las ${top3.length} más relevantes:\n\n${formatted}`;
-}
-
-async function handleGenerateReport(
-  input: Record<string, unknown>
-): Promise<string> {
-  const parsed = toolInputSchemas.generateReport.parse(input);
-
-  const n8nResult = await callN8nWebhook("generate-report", {
-    businessRut: businessProfile.rut,
-    reportType: parsed.reportType,
-    period: parsed.period,
-    includeProjections: parsed.includeProjections ?? false,
-  });
-
-  if (!n8nResult.error) {
-    return `Reporte generado exitosamente:\n${JSON.stringify(n8nResult, null, 2)}`;
-  }
-
-  // Fallback: build report from mock data
-  const months = financialData.months;
-
-  let filteredMonths = months;
-  if (parsed.reportType === "mensual") {
-    const [year, month] = parsed.period.split("-").map(Number);
-    filteredMonths = months.filter((m) => {
-      const monthNames = [
-        "Enero",
-        "Febrero",
-        "Marzo",
-        "Abril",
-        "Mayo",
-        "Junio",
-        "Julio",
-        "Agosto",
-        "Septiembre",
-        "Octubre",
-        "Noviembre",
-        "Diciembre",
-      ];
-      return m.year === year && monthNames.indexOf(m.month) === month - 1;
-    });
-  } else if (parsed.reportType === "trimestral") {
-    filteredMonths = months.slice(-3);
-  }
-
-  if (filteredMonths.length === 0) {
-    return `No hay datos financieros disponibles para el período ${parsed.period} (${parsed.reportType}).`;
-  }
-
-  const totalRevenue = filteredMonths.reduce((sum, m) => sum + m.revenue, 0);
-  const totalExpenses = filteredMonths.reduce((sum, m) => sum + m.expenses, 0);
-  const totalProfit = totalRevenue - totalExpenses;
-  const avgRevenue = Math.round(totalRevenue / filteredMonths.length);
-  const avgExpenses = Math.round(totalExpenses / filteredMonths.length);
-  const margin = totalRevenue > 0 ? totalProfit / totalRevenue : 0;
-
-  let report = `📊 **Reporte ${parsed.reportType} — ${parsed.period}**\n`;
-  report += `Empresa: ${businessProfile.name} (${businessProfile.rut})\n\n`;
-  report += `**Resumen del período (${filteredMonths.length} mes${filteredMonths.length > 1 ? "es" : ""}):**\n`;
-  report += `- Ingresos totales: ${formatCLP(totalRevenue)}\n`;
-  report += `- Gastos totales: ${formatCLP(totalExpenses)}\n`;
-  report += `- Utilidad bruta: ${formatCLP(totalProfit)}\n`;
-  report += `- Margen de utilidad: ${formatPercentage(margin)}\n\n`;
-  report += `**Promedios mensuales:**\n`;
-  report += `- Ingreso promedio: ${formatCLP(avgRevenue)}\n`;
-  report += `- Gasto promedio: ${formatCLP(avgExpenses)}\n\n`;
-
-  report += `**Detalle por mes:**\n`;
-  for (const m of filteredMonths) {
-    const profit = m.revenue - m.expenses;
-    report += `- ${m.month} ${m.year}: Ingresos ${formatCLP(m.revenue)} | Gastos ${formatCLP(m.expenses)} | Utilidad ${formatCLP(profit)}\n`;
-  }
-
-  if (parsed.includeProjections) {
-    const projectedMonthlyRevenue = avgRevenue;
-    const projectedMonthlyExpenses = avgExpenses;
-    const projectedAnnualProfit =
-      (projectedMonthlyRevenue - projectedMonthlyExpenses) * 12;
-    report += `\n**Proyecciones (basadas en tendencia actual):**\n`;
-    report += `- Ingreso mensual proyectado: ${formatCLP(projectedMonthlyRevenue)}\n`;
-    report += `- Gasto mensual proyectado: ${formatCLP(projectedMonthlyExpenses)}\n`;
-    report += `- Utilidad anual proyectada: ${formatCLP(projectedAnnualProfit)}\n`;
-  }
-
-  return report;
-}
-
-async function handleScheduleConsultation(
-  input: Record<string, unknown>
-): Promise<string> {
-  const parsed = toolInputSchemas.scheduleConsultation.parse(input);
-
-  const n8nResult = await callN8nWebhook("schedule-consultation", {
-    consultant: calendarAvailability.consultant,
-    date: parsed.date,
-    time: parsed.time,
-    subject: parsed.subject,
-    duration: parsed.duration ?? 60,
-    businessName: businessProfile.name,
-  });
-
-  if (!n8nResult.error) {
-    return `Consulta agendada exitosamente:\n${JSON.stringify(n8nResult, null, 2)}`;
-  }
-
-  // Fallback: check mock calendar
-  const slot = calendarAvailability.slots.find(
-    (s) => s.date === parsed.date && s.startTime === parsed.time
-  );
-
-  if (!slot) {
-    const availableOnDate = calendarAvailability.slots
-      .filter((s) => s.date === parsed.date && s.available)
-      .map((s) => s.startTime);
-
-    if (availableOnDate.length === 0) {
-      return `No hay horarios disponibles para ${parsed.date}. ${calendarAvailability.consultant} atiende de lunes a viernes de 9:00 a 18:00.`;
-    }
-
-    return `El horario ${parsed.time} no está disponible el ${parsed.date}. Horarios disponibles ese día: ${availableOnDate.join(", ")}.`;
-  }
-
-  if (!slot.available) {
-    const availableOnDate = calendarAvailability.slots
-      .filter((s) => s.date === parsed.date && s.available)
-      .map((s) => s.startTime);
-
-    return `El horario ${parsed.time} del ${parsed.date} ya está ocupado. Horarios disponibles ese día: ${availableOnDate.length > 0 ? availableOnDate.join(", ") : "ninguno"}.`;
-  }
-
-  const duration = parsed.duration ?? 60;
-  return `Consulta agendada con ${calendarAvailability.consultant}:\n- Fecha: ${parsed.date}\n- Hora: ${parsed.time}\n- Duración: ${duration} minutos\n- Tema: ${parsed.subject}\n- Empresa: ${businessProfile.name}\n\nSe enviará un recordatorio por correo electrónico 24 horas antes.`;
-}
-
-async function handleSendEmail(
-  input: Record<string, unknown>
-): Promise<string> {
-  const parsed = toolInputSchemas.sendEmail.parse(input);
-
-  const n8nResult = await callN8nWebhook("send-email", {
-    to: parsed.to,
-    subject: parsed.subject,
-    body: parsed.body,
-    priority: parsed.priority ?? "normal",
-    from: `${businessProfile.name} <contacto@donpedro.cl>`,
-  });
-
-  if (!n8nResult.error) {
-    return `Correo enviado exitosamente:\n${JSON.stringify(n8nResult, null, 2)}`;
-  }
-
-  // Fallback: mock success
-  return `Correo enviado exitosamente (modo demo):\n- Para: ${parsed.to}\n- Asunto: ${parsed.subject}\n- Prioridad: ${parsed.priority ?? "normal"}\n- Estado: Enviado\n- ID de seguimiento: EMAIL-${Date.now()}`;
 }
 
 function handleCheckProcedureStatus(input: Record<string, unknown>): string {
@@ -374,6 +223,107 @@ function handleCalculateTax(input: Record<string, unknown>): string {
   return `Tipo de impuesto "${parsed.taxType}" no soportado. Use: iva, ppm o renta_anual.`;
 }
 
+async function handleGenerateAndSendReport(
+  input: Record<string, unknown>
+): Promise<string> {
+  const parsed = toolInputSchemas.generateAndSendReport.parse(input);
+
+  const needsEmail = parsed.channel === "email" || parsed.channel === "both";
+  const needsWhatsApp = parsed.channel === "whatsapp" || parsed.channel === "both";
+
+  if (needsEmail && !parsed.email) {
+    return "Error: Se requiere una dirección de email para enviar el informe por correo.";
+  }
+  if (needsWhatsApp && !parsed.phone) {
+    return "Error: Se requiere un número de WhatsApp para enviar el informe.";
+  }
+
+  // Generate PDF
+  const pdfBuffer = await generateReportPDF(
+    parsed.reportType,
+    parsed.period,
+    businessProfile.rut
+  );
+  const pdfBase64 = pdfBuffer.toString("base64");
+  const filename = `Informe_${parsed.reportType}_${parsed.period.replace(/\s+/g, "_")}.pdf`;
+
+  const results: string[] = [];
+  const reportLabel = {
+    tributario: "Tributario",
+    financiero: "Financiero",
+    laboral: "Laboral",
+  }[parsed.reportType];
+
+  // Save PDF for download
+  const pdfId = savePDF(pdfBuffer, filename);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const downloadUrl = `${baseUrl}/api/reports/${pdfId}`;
+  results.push(`PDF disponible para descarga: ${downloadUrl}`);
+
+  // Send via email
+  if (needsEmail) {
+    const dataBuilders = {
+      tributario: buildTributarioData,
+      financiero: buildFinancieroData,
+      laboral: buildLaboralData,
+    };
+    const reportData = dataBuilders[parsed.reportType](parsed.period, businessProfile.rut);
+
+    const emailHTML = buildReportEmailHTML({
+      reportTitle: `Informe ${reportLabel}`,
+      reportType: parsed.reportType,
+      period: parsed.period,
+      clientName: businessProfile.name,
+      clientRut: businessProfile.rut,
+      highlights: reportData.highlights,
+      downloadUrl: downloadUrl,
+      consultantName: "Esteban Ramos M.",
+      consultantRole: "Director Ejecutivo — Cintax Consultores",
+      consultantEmail: "eramos@cintax.cl",
+      consultantPhone: "+56 9 8156 6898",
+    });
+
+    const emailResult = await callN8nWebhook("cintax-send-email", {
+      to: parsed.email,
+      subject: `Informe ${reportLabel} — ${parsed.period} — ${businessProfile.name}`,
+      body: `Informe ${reportLabel} del período ${parsed.period} para ${businessProfile.name}.`,
+      html: emailHTML,
+      attachment: {
+        base64: pdfBase64,
+        filename,
+        contentType: "application/pdf",
+      },
+    });
+
+    if (!emailResult.error) {
+      results.push(`Email enviado a ${parsed.email} con PDF adjunto`);
+    } else {
+      results.push(`Error enviando email: ${emailResult.message}`);
+    }
+  }
+
+  // Send via WhatsApp
+  if (needsWhatsApp) {
+    const waResult = await callN8nWebhook("send-whatsapp", {
+      phone: parsed.phone,
+      message: `📊 Informe ${reportLabel} — ${parsed.period}\n${businessProfile.name} (${businessProfile.rut})\n\nGenerado por Asistente Cintax`,
+      document: {
+        base64: pdfBase64,
+        filename,
+        mimetype: "application/pdf",
+      },
+    });
+
+    if (!waResult.error) {
+      results.push(`WhatsApp enviado a +${parsed.phone} con PDF adjunto`);
+    } else {
+      results.push(`Error enviando WhatsApp: ${waResult.message}`);
+    }
+  }
+
+  return `Informe ${reportLabel} (${parsed.period}) generado en PDF.\n\nResultados de envío:\n${results.map((r) => `- ${r}`).join("\n")}`;
+}
+
 // ---- Main dispatcher ----
 
 export async function executeToolCall(
@@ -383,11 +333,9 @@ export async function executeToolCall(
   try {
     const handlers: Record<ToolName, (input: Record<string, unknown>) => string | Promise<string>> = {
       searchRegulations: handleSearchRegulations,
-      generateReport: handleGenerateReport,
-      scheduleConsultation: handleScheduleConsultation,
-      sendEmail: handleSendEmail,
       checkProcedureStatus: handleCheckProcedureStatus,
       calculateTax: handleCalculateTax,
+      generateAndSendReport: handleGenerateAndSendReport,
     };
 
     const handler = handlers[toolName as ToolName];
