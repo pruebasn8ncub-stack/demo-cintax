@@ -279,7 +279,7 @@ function AnimatedPhone() {
         {/* Chat */}
         <div
           ref={chatRef}
-          className="flex h-[340px] flex-col gap-1 overflow-y-auto px-2 py-2"
+          className="flex h-[340px] flex-col justify-end gap-1 overflow-y-auto px-2 py-2"
           style={{
             scrollbarWidth: "none",
             backgroundImage:

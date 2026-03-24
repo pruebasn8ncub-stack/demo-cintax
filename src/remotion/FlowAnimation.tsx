@@ -5,10 +5,9 @@ const GOLD_GLOW = "rgba(245,158,11,0.5)";
 const DEEP_BG = "#0B1120";
 
 const NODE_LABELS: string[][] = [
-  ["Webhook", "Procesar", "Formato", "Response"],
-  ["Webhook", "Validar", "Resend", "Response"],
-  ["Webhook", "Calendario", "Email", "Response"],
-  ["WhatsApp", "HTTP", "Parser", "WhatsApp"],
+  ["Webhook", "Procesar", "PDF", "Response"],
+  ["Webhook", "Nodemailer", "Gmail SMTP", "Response"],
+  ["Webhook", "Preparar", "Evolution API", "Response"],
 ];
 
 interface FlowAnimationProps {
