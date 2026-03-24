@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import TypeWriter from "@/components/shared/TypeWriter";
+import ParticleField from "@/components/shared/ParticleField";
 import { cn } from "@/lib/utils";
 import { AnimatedBadge } from "@/components/ui/animated-badge";
 import { ShinyButton } from "@/components/ui/shiny-button";
@@ -85,8 +87,18 @@ export default function Hero() {
       id="hero"
       className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background-deep"
     >
-      {/* Background layer: Remotion animated data flow */}
-      <div className="pointer-events-none absolute inset-0 z-0">
+      {/* Layer 0: AI-generated background image */}
+      <div className="absolute inset-0 z-0">
+        <Image src="/images/hero-bg.png" alt="" fill className="object-cover opacity-20" priority />
+      </div>
+
+      {/* Layer 1: Particle field (desktop only) */}
+      <div className="pointer-events-none absolute inset-0 z-[1] hidden md:block">
+        <ParticleField count={50} colors={["#F59E0B", "#8B5CF6"]} speed={0.5} />
+      </div>
+
+      {/* Layer 2: Remotion data flow animation */}
+      <div className="pointer-events-none absolute inset-0 z-[2]">
         {playerReady && (
           <RemotionPlayer
             component={HeroBackgroundLazy}
@@ -97,20 +109,27 @@ export default function Hero() {
             loop
             autoPlay
             controls={false}
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
+            style={{ width: "100%", height: "100%" }}
           />
         )}
       </div>
 
-      {/* Vignette overlay */}
+      {/* Layer 3: Scanline overlay */}
       <div
-        className="pointer-events-none absolute inset-0 z-[1]"
+        className="pointer-events-none absolute inset-0 z-[3]"
         style={{
           background:
-            "radial-gradient(ellipse at center, transparent 30%, rgba(11,17,32,0.7) 100%)",
+            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.03) 2px, rgba(0,255,0,0.03) 4px)",
+          opacity: 0.03,
+        }}
+      />
+
+      {/* Layer 4: Vignette */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[4]"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, transparent 30%, rgba(11,17,32,0.6) 100%)",
         }}
       />
 

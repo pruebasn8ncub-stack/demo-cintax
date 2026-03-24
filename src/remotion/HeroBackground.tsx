@@ -1,128 +1,91 @@
 import { AbsoluteFill, useCurrentFrame } from "remotion";
 
 const GOLD = "#F59E0B";
+const GOLD_DIM = "rgba(245,158,11,0.6)";
 const PURPLE = "#8B5CF6";
-const BG = "#0B1120";
+const PURPLE_DIM = "rgba(139,92,246,0.5)";
 
-/* ── Data streams — financial/tax data flowing down ── */
+/* ── Data labels that travel along paths ── */
 
-interface DataStream {
-  x: number;
-  speed: number;
-  opacity: number;
-  color: string;
-  fontSize: number;
-  items: string[];
-  phase: number;
-}
-
-const DATA_ITEMS = [
-  "IVA 19%", "$3.068.500", "F29", "PPM 0.25%", "76.543.210-K",
-  "RUT", "$28.450.000", "PYME", "Art.23", "DL825",
-  "$398.500", "ONLINE", "PDF", "n8n", "Claude",
-  "SII", "F22", "$12.600.000", "API", "webhook",
-  "email", "WhatsApp", "reporte", "informe", "cálculo",
-  "$8.600.000", "tributario", "laboral", "contable", "agente",
-  "0x4F2B", "TCP/443", "HTTPS", "JWT", "async",
-  "stream", "tools", "$7.200.000", "cotización", "AFP",
+const DATA_LABELS = [
+  "IVA 19%", "$3.068.500", "F29", "PPM", "76.543.210-K",
+  "$28.450.000", "PYME", "n8n", "Claude", "PDF",
+  "SII", "$398.500", "webhook", "email", "WhatsApp",
+  "$12.600.000", "API", "$7.200.000", "reporte", "agente",
 ];
 
-function createStreams(count: number): DataStream[] {
-  const streams: DataStream[] = [];
-  for (let i = 0; i < count; i++) {
-    const items: string[] = [];
-    for (let j = 0; j < 8; j++) {
-      items.push(DATA_ITEMS[(i * 7 + j * 3) % DATA_ITEMS.length]);
-    }
-    streams.push({
-      x: (i / count) * 100,
-      speed: 0.3 + (i % 5) * 0.15,
-      opacity: 0.04 + (i % 3) * 0.02,
-      color: i % 4 === 0 ? PURPLE : GOLD,
-      fontSize: 10 + (i % 3) * 2,
-      items,
-      phase: i * 47,
-    });
-  }
-  return streams;
+/* ── Traveling data particles — move along curved paths ── */
+
+interface DataParticle {
+  label: string;
+  path: string; // SVG path
+  duration: number; // frames for full traversal
+  startFrame: number;
+  color: string;
+  fontSize: number;
+  opacity: number;
 }
 
-const STREAMS = createStreams(18);
+function generateParticles(): DataParticle[] {
+  const particles: DataParticle[] = [];
+  const paths = [
+    // Diagonal streams — top-left to bottom-right
+    "M -100 200 Q 500 300 960 540 T 2020 880",
+    "M -100 400 Q 400 200 960 540 T 2020 400",
+    "M -100 0 Q 600 400 1200 300 T 2020 600",
+    // Right to left streams
+    "M 2020 100 Q 1400 400 960 540 T -100 700",
+    "M 2020 800 Q 1200 500 960 540 T -100 300",
+    // Bottom arcs
+    "M 200 1100 Q 600 600 960 540 T 1700 1100",
+    "M 1700 1100 Q 1300 700 960 540 T 200 1100",
+    // Top arcs
+    "M 300 -50 Q 700 400 960 540 T 1600 -50",
+    "M 1600 -50 Q 1200 300 960 540 T 300 -50",
+    // Vertical streams
+    "M 480 -50 Q 500 400 480 1130",
+    "M 1440 -50 Q 1420 400 1440 1130",
+    // Cross paths
+    "M -50 540 L 2020 540",
+    "M 960 -50 Q 960 540 960 1130",
+  ];
 
-/* ── Floating nodes — represent data points ── */
+  for (let i = 0; i < 30; i++) {
+    const pathIdx = i % paths.length;
+    particles.push({
+      label: DATA_LABELS[i % DATA_LABELS.length],
+      path: paths[pathIdx],
+      duration: 180 + (i % 5) * 40,
+      startFrame: (i * 31) % 200,
+      color: i % 3 === 0 ? PURPLE_DIM : GOLD_DIM,
+      fontSize: 9 + (i % 3),
+      opacity: 0.12 + (i % 4) * 0.04,
+    });
+  }
+  return particles;
+}
 
-interface FloatingNode {
-  x: number;
-  y: number;
-  size: number;
+const PARTICLES = generateParticles();
+
+/* ── Glowing orbs at path intersections (center focal point) ── */
+
+interface Orb {
+  cx: number;
+  cy: number;
+  r: number;
   color: string;
-  speedX: number;
-  speedY: number;
+  phaseSpeed: number;
   phase: number;
 }
 
-function createNodes(count: number): FloatingNode[] {
-  const nodes: FloatingNode[] = [];
-  for (let i = 0; i < count; i++) {
-    nodes.push({
-      x: (i * 137) % 100,
-      y: (i * 89) % 100,
-      size: 2 + (i % 4),
-      color: i % 3 === 0 ? PURPLE : GOLD,
-      speedX: 0.02 + (i % 5) * 0.008,
-      speedY: 0.015 + (i % 4) * 0.01,
-      phase: i * 1.7,
-    });
-  }
-  return nodes;
-}
-
-const NODES = createNodes(20);
-
-/* ── Connection lines between nearby nodes ── */
-
-function ConnectionLines({ frame }: { frame: number }) {
-  const nodePositions = NODES.map((n) => ({
-    x: (n.x + Math.sin(frame * n.speedX + n.phase) * 8) * 19.2,
-    y: (n.y + Math.cos(frame * n.speedY + n.phase) * 6) * 10.8,
-  }));
-
-  const lines: Array<{ x1: number; y1: number; x2: number; y2: number; opacity: number }> = [];
-
-  for (let i = 0; i < nodePositions.length; i++) {
-    for (let j = i + 1; j < nodePositions.length; j++) {
-      const dx = nodePositions[i].x - nodePositions[j].x;
-      const dy = nodePositions[i].y - nodePositions[j].y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 300) {
-        lines.push({
-          x1: nodePositions[i].x,
-          y1: nodePositions[i].y,
-          x2: nodePositions[j].x,
-          y2: nodePositions[j].y,
-          opacity: Math.max(0, 0.08 * (1 - dist / 300)),
-        });
-      }
-    }
-  }
-
-  return (
-    <>
-      {lines.map((line, i) => (
-        <line
-          key={i}
-          x1={line.x1}
-          y1={line.y1}
-          x2={line.x2}
-          y2={line.y2}
-          stroke={GOLD}
-          strokeWidth={0.5}
-          opacity={line.opacity}
-        />
-      ))}
-    </>
-  );
-}
+const ORBS: Orb[] = [
+  { cx: 960, cy: 540, r: 120, color: GOLD, phaseSpeed: 0.02, phase: 0 },
+  { cx: 960, cy: 540, r: 60, color: PURPLE, phaseSpeed: 0.03, phase: 1 },
+  { cx: 400, cy: 300, r: 40, color: GOLD, phaseSpeed: 0.015, phase: 2 },
+  { cx: 1500, cy: 700, r: 35, color: PURPLE, phaseSpeed: 0.018, phase: 3 },
+  { cx: 300, cy: 800, r: 25, color: GOLD, phaseSpeed: 0.02, phase: 4 },
+  { cx: 1600, cy: 200, r: 30, color: PURPLE, phaseSpeed: 0.022, phase: 5 },
+];
 
 /* ── Main composition ── */
 
@@ -134,7 +97,7 @@ export const HeroBackground: React.FC<HeroBackgroundProps> = () => {
   const frame = useCurrentFrame();
 
   return (
-    <AbsoluteFill style={{ backgroundColor: BG }}>
+    <AbsoluteFill style={{ backgroundColor: "transparent" }}>
       <svg
         width="100%"
         height="100%"
@@ -142,87 +105,123 @@ export const HeroBackground: React.FC<HeroBackgroundProps> = () => {
         preserveAspectRatio="xMidYMid slice"
         style={{ position: "absolute", inset: 0 }}
       >
-        {/* Connection lines */}
-        <ConnectionLines frame={frame} />
+        <defs>
+          {/* Glow filter */}
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
 
-        {/* Floating nodes */}
-        {NODES.map((node, i) => {
-          const nx = (node.x + Math.sin(frame * node.speedX + node.phase) * 8) * 19.2;
-          const ny = (node.y + Math.cos(frame * node.speedY + node.phase) * 6) * 10.8;
-          const pulse = 1 + Math.sin(frame * 0.08 + node.phase) * 0.3;
+          {/* Radial gradient for center focal */}
+          <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor={GOLD} stopOpacity={0.06} />
+            <stop offset="60%" stopColor={GOLD} stopOpacity={0.02} />
+            <stop offset="100%" stopColor={GOLD} stopOpacity={0} />
+          </radialGradient>
+        </defs>
 
+        {/* Center focal glow */}
+        <ellipse
+          cx={960}
+          cy={540}
+          rx={400 + Math.sin(frame * 0.02) * 30}
+          ry={300 + Math.cos(frame * 0.015) * 20}
+          fill="url(#centerGlow)"
+        />
+
+        {/* Path traces — subtle visible paths */}
+        {PARTICLES.slice(0, 13).map((p, i) => (
+          <path
+            key={`trace-${i}`}
+            d={p.path}
+            fill="none"
+            stroke={p.color}
+            strokeWidth={0.5}
+            opacity={0.04 + Math.sin(frame * 0.01 + i) * 0.02}
+          />
+        ))}
+
+        {/* Orbs — glowing focal points */}
+        {ORBS.map((orb, i) => {
+          const pulse = 1 + Math.sin(frame * orb.phaseSpeed + orb.phase) * 0.3;
+          const breathe = Math.sin(frame * 0.025 + orb.phase) * 0.02;
           return (
-            <g key={`node-${i}`}>
-              {/* Glow */}
+            <g key={`orb-${i}`}>
               <circle
-                cx={nx}
-                cy={ny}
-                r={node.size * 3 * pulse}
-                fill={node.color}
-                opacity={0.03}
+                cx={orb.cx}
+                cy={orb.cy}
+                r={orb.r * pulse}
+                fill={orb.color}
+                opacity={0.02 + breathe}
               />
-              {/* Core */}
               <circle
-                cx={nx}
-                cy={ny}
-                r={node.size * pulse}
-                fill={node.color}
-                opacity={0.15 + Math.sin(frame * 0.05 + node.phase) * 0.08}
+                cx={orb.cx}
+                cy={orb.cy}
+                r={orb.r * 0.3 * pulse}
+                fill={orb.color}
+                opacity={0.04 + breathe}
+                filter="url(#glow)"
               />
             </g>
           );
         })}
 
-        {/* Data streams — vertical text columns */}
-        {STREAMS.map((stream, i) => {
-          const baseX = stream.x * 19.2;
-          const scrollOffset = (frame * stream.speed * 3 + stream.phase) % 1200;
+        {/* Data particles traveling along paths */}
+        {PARTICLES.map((p, i) => {
+          const loopFrame = (frame + p.startFrame) % (p.duration + 60);
+          const progress = Math.min(1, Math.max(0, loopFrame / p.duration));
+
+          // Fade in/out at edges
+          const fadeIn = Math.min(1, progress * 8);
+          const fadeOut = Math.min(1, (1 - progress) * 8);
+          const alpha = p.opacity * fadeIn * fadeOut;
+
+          if (alpha < 0.01) return null;
 
           return (
-            <g key={`stream-${i}`} opacity={stream.opacity}>
-              {stream.items.map((item, j) => {
-                const y = (j * 140 - scrollOffset + 1200) % 1200 - 60;
-                return (
-                  <text
-                    key={j}
-                    x={baseX}
-                    y={y}
-                    fontSize={stream.fontSize}
-                    fontFamily="'JetBrains Mono', monospace"
-                    fill={stream.color}
-                    opacity={0.6 + Math.sin(frame * 0.03 + j) * 0.4}
-                  >
-                    {item}
-                  </text>
-                );
-              })}
+            <g key={`particle-${i}`}>
+              {/* Dot traveling on path */}
+              <circle r={2.5} fill={p.color} opacity={alpha * 2} filter="url(#glow)">
+                <animateMotion
+                  dur={`${p.duration / 30}s`}
+                  repeatCount="indefinite"
+                  begin={`${p.startFrame / 30}s`}
+                  path={p.path}
+                />
+              </circle>
+
+              {/* Label traveling with dot */}
+              <text
+                fontSize={p.fontSize}
+                fontFamily="'JetBrains Mono', monospace"
+                fill={p.color}
+                opacity={alpha}
+                dy={-8}
+              >
+                <animateMotion
+                  dur={`${p.duration / 30}s`}
+                  repeatCount="indefinite"
+                  begin={`${p.startFrame / 30}s`}
+                  path={p.path}
+                />
+                {p.label}
+              </text>
             </g>
           );
         })}
 
-        {/* Horizontal scan line */}
+        {/* Scan line */}
         <rect
           x={0}
-          y={(frame * 2.5) % 1080}
+          y={(frame * 1.8) % 1080}
           width={1920}
           height={1}
           fill={GOLD}
-          opacity={0.04}
+          opacity={0.06}
         />
-        <rect
-          x={0}
-          y={(frame * 2.5) % 1080}
-          width={1920}
-          height={40}
-          fill={`url(#scanGrad)`}
-        />
-
-        <defs>
-          <linearGradient id="scanGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={GOLD} stopOpacity={0.03} />
-            <stop offset="100%" stopColor={GOLD} stopOpacity={0} />
-          </linearGradient>
-        </defs>
       </svg>
     </AbsoluteFill>
   );
