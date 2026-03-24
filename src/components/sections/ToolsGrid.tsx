@@ -7,8 +7,6 @@ import {
   Search,
   FileText,
   Calculator,
-  Calendar,
-  Mail,
   ClipboardList,
 } from "lucide-react";
 import SectionWrapper from "@/components/shared/SectionWrapper";
@@ -37,14 +35,6 @@ const TOOLS: Tool[] = [
     name: "Normativa Tributaria",
     description:
       "Búsqueda en tiempo real de normativas del SII, circulares y resoluciones vigentes.",
-    colSpan: true,
-  },
-  {
-    id: "generateReport",
-    icon: FileText,
-    name: "Generar Reportes",
-    description:
-      "Reportes de IVA, PPM, retenciones y balances listos para enviar al cliente.",
   },
   {
     id: "calculateTax",
@@ -54,26 +44,18 @@ const TOOLS: Tool[] = [
       "Cálculo automático de IVA, PPM, impuesto a la renta y cotizaciones previsionales.",
   },
   {
-    id: "scheduleConsultation",
-    icon: Calendar,
-    name: "Agendar Consultas",
-    description:
-      "Coordina reuniones entre clientes y contadores según disponibilidad.",
-    colSpan: true,
-  },
-  {
-    id: "sendEmail",
-    icon: Mail,
-    name: "Envío de Correos",
-    description:
-      "Envía reportes, recordatorios y notificaciones directamente al email del cliente.",
-  },
-  {
     id: "checkProcedureStatus",
     icon: ClipboardList,
     name: "Estado de Trámites",
     description:
       "Consulta el estado de trámites en el SII, Tesorería y organismos públicos.",
+  },
+  {
+    id: "generateAndSendReport",
+    icon: FileText,
+    name: "Informes PDF + Envío",
+    description:
+      "Genera informes profesionales en PDF y los envía por email y WhatsApp con firma corporativa.",
   },
 ];
 
@@ -88,16 +70,14 @@ function MiniVisual({ toolId }: { toolId: string }) {
           <div className="h-1.5 w-[30%] rounded-full bg-purple-500/20" />
         </div>
       );
-    case "generateReport":
+    case "generateAndSendReport":
       return (
-        <div className={cn(baseClasses, "flex items-end gap-0.5 px-1")}>
-          {[40, 65, 50, 80, 60].map((h, i) => (
-            <div
-              key={i}
-              className="flex-1 rounded-t bg-primary/15"
-              style={{ height: `${h}%` }}
-            />
-          ))}
+        <div className={cn(baseClasses, "flex items-center gap-1.5 px-1")}>
+          <div className="h-5 w-4 rounded-sm bg-primary/20" />
+          <div className="h-1 w-3 rounded-full bg-green-500/30" />
+          <div className="h-3 w-3 rounded-full bg-green-500/20" />
+          <div className="h-1 w-3 rounded-full bg-purple-500/30" />
+          <div className="h-3 w-3 rounded-full bg-purple-500/20" />
         </div>
       );
     case "calculateTax":
@@ -110,30 +90,6 @@ function MiniVisual({ toolId }: { toolId: string }) {
           <div className="flex items-center gap-1">
             <div className="h-1 w-5 rounded-full bg-primary/20" />
             <span className="font-mono text-[9px] text-primary/40">1%</span>
-          </div>
-        </div>
-      );
-    case "scheduleConsultation":
-      return (
-        <div className={cn(baseClasses, "grid grid-cols-7 gap-px px-1")}>
-          {Array.from({ length: 7 }).map((_, i) => (
-            <div
-              key={i}
-              className={cn(
-                "aspect-square rounded-sm",
-                i === 3 ? "bg-primary/30" : "bg-white/5"
-              )}
-            />
-          ))}
-        </div>
-      );
-    case "sendEmail":
-      return (
-        <div className={cn(baseClasses, "flex items-center gap-1 px-1")}>
-          <div className="h-4 w-4 rounded bg-primary/10" />
-          <div className="flex flex-1 flex-col gap-0.5">
-            <div className="h-1 w-full rounded-full bg-white/5" />
-            <div className="h-1 w-3/4 rounded-full bg-white/5" />
           </div>
         </div>
       );
@@ -249,7 +205,7 @@ export default function ToolsGrid() {
             HERRAMIENTAS
           </span>
           <h2 className="font-heading text-[32px] font-bold leading-tight text-foreground">
-            6 herramientas especializadas
+            4 herramientas especializadas
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-base text-muted-foreground">
             Cada herramienta está diseñada para resolver tareas específicas de
@@ -257,7 +213,7 @@ export default function ToolsGrid() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {TOOLS.map((tool, i) => (
             <ToolCard
               key={tool.id}

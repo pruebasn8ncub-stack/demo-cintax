@@ -6,11 +6,9 @@ import { cn } from "@/lib/utils";
 
 const SUGGESTED_PROMPTS = [
   "¿Cuándo vence la declaración de IVA?",
-  "Genera un reporte de mis ventas del mes",
-  "Agenda una reunión con mi contador",
-  "¿Cuánto PPM debo pagar este mes?",
-  "Envíame un resumen por correo",
+  "¿Cuánto IVA y PPM debo pagar este mes?",
   "¿Cuál es el estado de mi trámite en el SII?",
+  "Genera un informe tributario en PDF",
 ];
 
 export default function DemoChat() {
@@ -35,7 +33,7 @@ export default function DemoChat() {
           </h2>
 
           <p className="max-w-md text-base leading-relaxed text-muted-foreground">
-            Un agente de IA real conectado a Claude, equipado con 6 herramientas
+            Un agente de IA real conectado a Claude, equipado con 4 herramientas
             especializadas para gestión tributaria y contable.
           </p>
         </div>

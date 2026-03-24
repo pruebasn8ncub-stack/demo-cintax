@@ -33,7 +33,7 @@ const METRICS: Metric[] = [
     icon: MessageSquare,
   },
   {
-    value: 6,
+    value: 4,
     label: "Herramientas IA",
     icon: Wrench,
   },

@@ -10,11 +10,9 @@ interface ToolIndicatorProps {
 
 const TOOL_LABELS: Record<string, string> = {
   searchRegulations: "Buscando normativa...",
-  generateReport: "Generando reporte...",
-  scheduleConsultation: "Agendando consulta...",
-  sendEmail: "Enviando correo...",
   checkProcedureStatus: "Consultando estado...",
   calculateTax: "Calculando impuestos...",
+  generateAndSendReport: "Generando y enviando informe PDF...",
 };
 
 export default function ToolIndicator({

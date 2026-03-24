@@ -8,11 +8,8 @@ import {
   Code,
   FileText,
   Send,
-  ShieldCheck,
   Mail,
-  Calendar,
   MessageCircle,
-  Globe,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import SectionWrapper from "@/components/shared/SectionWrapper";
@@ -49,7 +46,7 @@ const workflows: Workflow[] = [
     nodes: [
       { icon: Webhook, label: "Webhook" },
       { icon: Code, label: "Procesar" },
-      { icon: FileText, label: "Formato" },
+      { icon: FileText, label: "PDF" },
       { icon: Send, label: "Response" },
     ],
   },
@@ -58,29 +55,19 @@ const workflows: Workflow[] = [
     tab: "Enviar Email",
     nodes: [
       { icon: Webhook, label: "Webhook" },
-      { icon: ShieldCheck, label: "Validar" },
-      { icon: Mail, label: "Resend" },
-      { icon: Send, label: "Response" },
-    ],
-  },
-  {
-    id: "schedule",
-    tab: "Agendar",
-    nodes: [
-      { icon: Webhook, label: "Webhook" },
-      { icon: Calendar, label: "Calendario" },
-      { icon: Mail, label: "Email" },
+      { icon: Code, label: "Nodemailer" },
+      { icon: Mail, label: "Gmail SMTP" },
       { icon: Send, label: "Response" },
     ],
   },
   {
     id: "whatsapp",
-    tab: "WhatsApp",
+    tab: "Enviar WhatsApp",
     nodes: [
-      { icon: MessageCircle, label: "WhatsApp" },
-      { icon: Globe, label: "HTTP" },
-      { icon: Code, label: "Parser" },
-      { icon: MessageCircle, label: "WhatsApp" },
+      { icon: Webhook, label: "Webhook" },
+      { icon: Code, label: "Preparar" },
+      { icon: MessageCircle, label: "Evolution API" },
+      { icon: Send, label: "Response" },
     ],
   },
 ];

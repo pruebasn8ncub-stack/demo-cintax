@@ -10,7 +10,6 @@ import {
   Search,
   Calculator,
   FileText,
-  Calendar,
   Database,
   Send,
   Bot,
@@ -31,12 +30,12 @@ const channels: { icon: LucideIcon; label: string; dotColor: string }[] = [
 ];
 
 const tools: { icon: LucideIcon; label: string }[] = [
-  { icon: Search, label: "Normativa SII" },
-  { icon: Calculator, label: "Cálculos" },
-  { icon: FileText, label: "Reportes" },
-  { icon: Calendar, label: "Agenda" },
-  { icon: Database, label: "Datos" },
-  { icon: Send, label: "Email" },
+  { icon: Search, label: "Normativa" },
+  { icon: Calculator, label: "Impuestos" },
+  { icon: Database, label: "Trámites" },
+  { icon: FileText, label: "Informes PDF" },
+  { icon: Mail, label: "Email" },
+  { icon: Send, label: "WhatsApp" },
 ];
 
 const techStack = ["Next.js", "Claude", "n8n", "Evolution API", "TypeScript", "Tailwind"];
