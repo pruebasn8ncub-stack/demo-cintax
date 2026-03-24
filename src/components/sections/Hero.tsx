@@ -39,20 +39,29 @@ function scrollToSection(id: string) {
 }
 
 export default function Hero() {
-  const [showContent, setShowContent] = useState(false);
+  const [bootPhase, setBootPhase] = useState<"playing" | "fading" | "done">("playing");
   const [playerReady, setPlayerReady] = useState(false);
+
+  const showContent = bootPhase === "done";
 
   // Lock scroll during boot sequence
   useEffect(() => {
     document.body.style.overflow = "hidden";
     setPlayerReady(true);
-    const timer = setTimeout(() => {
-      setShowContent(true);
-      document.body.style.overflow = "";
+
+    // Boot animation plays for BOOT_DURATION_MS, then fade out for 600ms
+    const bootTimer = setTimeout(() => {
+      setBootPhase("fading");
     }, BOOT_DURATION_MS);
 
+    const doneTimer = setTimeout(() => {
+      setBootPhase("done");
+      document.body.style.overflow = "";
+    }, BOOT_DURATION_MS + 600);
+
     return () => {
-      clearTimeout(timer);
+      clearTimeout(bootTimer);
+      clearTimeout(doneTimer);
       document.body.style.overflow = "";
     };
   }, []);
@@ -95,22 +104,35 @@ export default function Hero() {
       />
 
       {/* Remotion Boot Sequence — fixed fullscreen overlay */}
-      {!showContent && playerReady && (
-        <div className="fixed inset-0 z-50 bg-background-deep">
-          <RemotionPlayer
-            component={HeroSequenceLazy}
-            durationInFrames={120}
-            fps={30}
-            compositionWidth={1920}
-            compositionHeight={1080}
-            autoPlay
-            controls={false}
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          />
-        </div>
+      {bootPhase !== "done" && (
+        <motion.div
+          className="fixed inset-0 z-50"
+          style={{ background: "#0B1120" }}
+          animate={{
+            opacity: bootPhase === "fading" ? 0 : 1,
+            scale: bootPhase === "fading" ? 1.05 : 1,
+          }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
+        >
+          {playerReady && (
+            <RemotionPlayer
+              component={HeroSequenceLazy}
+              durationInFrames={120}
+              fps={30}
+              compositionWidth={1920}
+              compositionHeight={1080}
+              autoPlay
+              controls={false}
+              style={{
+                width: "100vw",
+                height: "100vh",
+                position: "absolute",
+                top: 0,
+                left: 0,
+              }}
+            />
+          )}
+        </motion.div>
       )}
 
       {/* Hero Content (revealed after boot) */}

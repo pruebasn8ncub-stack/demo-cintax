@@ -21,10 +21,10 @@ const lines: TerminalLineConfig[] = [
     endFrame: 30,
   },
   {
-    text: "\u25b8 Cargando tools: [6/6 ready]",
+    text: "\u25b8 Cargando tools: [4/4 ready]",
     startFrame: 30,
     endFrame: 50,
-    highlights: [{ text: "[6/6 ready]", color: TERMINAL_GOLD }],
+    highlights: [{ text: "[4/4 ready]", color: TERMINAL_GOLD }],
   },
   {
     text: "\u25b8 Conectando canales: WhatsApp \u2713 | Web Chat \u2713 | Email \u2713",
