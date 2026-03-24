@@ -46,16 +46,15 @@ export default function Hero() {
 
   // Lock scroll during boot sequence
   useEffect(() => {
+    window.scrollTo(0, 0);
     document.body.style.overflow = "hidden";
     setPlayerReady(true);
 
-    // Boot animation plays for BOOT_DURATION_MS, then fade out for 600ms
     const bootTimer = setTimeout(() => {
       setBootPhase("fading");
     }, BOOT_DURATION_MS);
 
     const doneTimer = setTimeout(() => {
-      window.scrollTo(0, 0);
       setBootPhase("done");
       document.body.style.overflow = "";
     }, BOOT_DURATION_MS + 600);
@@ -136,14 +135,13 @@ export default function Hero() {
         </motion.div>
       )}
 
-      {/* Hero Content (revealed after boot) */}
-      {showContent && (
-        <motion.div
-          className="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-4 text-center sm:px-6 lg:px-8"
-          initial="hidden"
-          animate="visible"
-          transition={{ staggerChildren: 0.1 }}
-        >
+      {/* Hero Content (always rendered, animated on boot complete) */}
+      <motion.div
+        className="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-4 text-center sm:px-6 lg:px-8"
+        initial="hidden"
+        animate={showContent ? "visible" : "hidden"}
+        transition={{ staggerChildren: 0.1 }}
+      >
           {/* Badge */}
           <motion.div
             variants={fadeUpVariants}
@@ -233,7 +231,6 @@ export default function Hero() {
             </motion.div>
           </motion.div>
         </motion.div>
-      )}
     </section>
   );
 }
