@@ -67,10 +67,10 @@ export default function DemoWhatsApp() {
             <RemotionPlayer
               component={WhatsAppDemo as React.ComponentType<Record<string, unknown>>}
               inputProps={{}}
-              durationInFrames={350}
+              durationInFrames={380}
               fps={30}
               compositionWidth={400}
-              compositionHeight={540}
+              compositionHeight={560}
               loop
               autoPlay
               controls={false}
