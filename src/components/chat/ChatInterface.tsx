@@ -1,8 +1,8 @@
 "use client";
 
 import { useReducer, useRef, useCallback, useEffect } from "react";
+import { Bot, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import GlassCard from "@/components/shared/GlassCard";
 import ChatBubble from "@/components/chat/ChatBubble";
 import ChatInput from "@/components/chat/ChatInput";
 import ToolIndicator from "@/components/chat/ToolIndicator";
@@ -268,25 +268,45 @@ export default function ChatInterface({
     state.messages.length === 0;
 
   return (
-    <GlassCard className={cn("relative flex max-h-[70vh] flex-col", className)}>
-      {/* Message count badge */}
-      <div className="absolute right-3 top-3 z-10 rounded-full bg-[#1E293B] px-2.5 py-0.5 text-xs text-[#94A3B8] ring-1 ring-[#334155]">
-        {state.messageCount}/30
+    <div className={cn("relative flex flex-col overflow-hidden rounded-2xl border border-[#1E293B] bg-[#0B1120]/90 backdrop-blur-xl", className)}>
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-[#1E293B] px-4 py-3">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#F59E0B] to-[#D97706]">
+              <Bot className="h-5 w-5 text-[#0F172A]" />
+            </div>
+            <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#0B1120] bg-[#22C55E]" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-[#F8FAFC]">Asistente Cintax</p>
+            <p className="text-[10px] text-[#64748B]">
+              {state.isStreaming ? "Respondiendo..." : "4 herramientas disponibles"}
+            </p>
+          </div>
+        </div>
+        <div className="rounded-full bg-[#1E293B] px-2.5 py-0.5 text-[10px] font-mono text-[#64748B] ring-1 ring-[#334155]">
+          {state.messageCount}/30
+        </div>
       </div>
 
-      {/* Scrollable message area */}
+      {/* Messages */}
       <div
         ref={scrollRef}
-        className="flex-1 space-y-4 overflow-y-auto p-4 pt-10"
-        style={{
-          scrollbarWidth: "thin",
-          scrollbarColor: "#334155 transparent",
-        }}
+        className="flex-1 space-y-3 overflow-y-auto p-4"
+        style={{ scrollbarWidth: "none" }}
       >
+        {/* Empty state */}
         {state.messages.length === 0 && !showSuggestions && (
-          <p className="py-12 text-center text-sm text-[#94A3B8]">
-            Inicia una conversación con el agente.
-          </p>
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F59E0B]/10 ring-1 ring-[#F59E0B]/20">
+              <Sparkles className="h-7 w-7 text-[#F59E0B]" />
+            </div>
+            <p className="text-sm font-medium text-[#F8FAFC]">¿En qué puedo ayudarte?</p>
+            <p className="mt-1 max-w-[240px] text-xs text-[#64748B]">
+              Consultas tributarias, cálculos de impuestos, informes y más.
+            </p>
+          </div>
         )}
 
         {state.messages.map((msg) => (
@@ -298,15 +318,13 @@ export default function ChatInterface({
           />
         ))}
 
-        {/* Tool indicator */}
         <ToolIndicator
           toolName={state.activeTool ?? ""}
           isActive={state.activeTool !== null}
         />
 
-        {/* Error message */}
         {state.error && (
-          <div className="mx-auto max-w-[85%] rounded-lg border border-[#EF4444]/30 bg-[#EF4444]/10 px-4 py-2 text-center text-sm text-[#EF4444]">
+          <div className="mx-auto max-w-[85%] rounded-xl border border-[#EF4444]/20 bg-[#EF4444]/5 px-4 py-2.5 text-center text-xs text-[#EF4444]">
             {state.error}
           </div>
         )}
@@ -314,13 +332,13 @@ export default function ChatInterface({
 
       {/* Suggested prompts */}
       {showSuggestions && (
-        <div className="flex flex-wrap gap-2 border-t border-[#334155]/50 px-4 py-3">
+        <div className="flex flex-wrap gap-2 border-t border-[#1E293B] px-4 py-3">
           {suggestedPrompts.map((prompt) => (
             <button
               key={prompt}
               type="button"
               onClick={() => sendMessage(prompt)}
-              className="rounded-full border border-[#F59E0B]/30 bg-[#F59E0B]/5 px-3.5 py-1.5 text-xs text-[#F59E0B] transition-colors hover:bg-[#F59E0B]/15"
+              className="rounded-full border border-[#F59E0B]/20 bg-[#F59E0B]/5 px-3.5 py-1.5 text-[11px] text-[#F59E0B] transition-all hover:border-[#F59E0B]/40 hover:bg-[#F59E0B]/10 hover:shadow-[0_0_8px_rgba(245,158,11,0.1)]"
             >
               {prompt}
             </button>
@@ -328,13 +346,10 @@ export default function ChatInterface({
         </div>
       )}
 
-      {/* Chat input */}
-      <div className="border-t border-[#334155]/50 p-3">
-        <ChatInput
-          onSend={sendMessage}
-          disabled={state.isStreaming}
-        />
+      {/* Input */}
+      <div className="border-t border-[#1E293B] p-3">
+        <ChatInput onSend={sendMessage} disabled={state.isStreaming} />
       </div>
-    </GlassCard>
+    </div>
   );
 }

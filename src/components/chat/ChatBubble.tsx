@@ -1,8 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Bot } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Bot, User } from "lucide-react";
 
 interface ChatBubbleProps {
   role: "user" | "assistant";
@@ -10,50 +9,52 @@ interface ChatBubbleProps {
   isStreaming?: boolean;
 }
 
-export default function ChatBubble({
-  role,
-  content,
-  isStreaming = false,
-}: ChatBubbleProps) {
+export default function ChatBubble({ role, content, isStreaming }: ChatBubbleProps) {
   const isUser = role === "user";
 
   return (
     <motion.div
-      className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}
-      initial={{ opacity: 0, x: isUser ? 20 : -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className={`flex gap-2.5 ${isUser ? "flex-row-reverse" : "flex-row"}`}
     >
-      <div
-        className={cn(
-          "flex max-w-[85%] gap-2.5",
-          isUser ? "flex-row-reverse" : "flex-row"
+      {/* Avatar */}
+      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+        isUser
+          ? "bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9]"
+          : "bg-gradient-to-br from-[#F59E0B] to-[#D97706]"
+      }`}>
+        {isUser ? (
+          <User className="h-4 w-4 text-white" />
+        ) : (
+          <Bot className="h-4 w-4 text-[#0F172A]" />
         )}
-      >
-        {/* Bot icon for assistant messages */}
-        {!isUser && (
-          <div className="mt-1 flex size-7 shrink-0 items-center justify-center rounded-full bg-[#1E293B] ring-1 ring-[#334155]">
-            <Bot size={20} className="text-[#94A3B8]" />
-          </div>
-        )}
+      </div>
 
-        {/* Message bubble */}
-        <div
-          className={cn(
-            "rounded-2xl px-4 py-3",
-            isUser
-              ? "border-l-2 border-[#F59E0B] bg-[#F59E0B]/10 text-[#F8FAFC]"
-              : "bg-[#1E293B] text-[#F8FAFC]"
+      {/* Bubble */}
+      <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+        isUser
+          ? "rounded-tr-sm bg-[#F59E0B]/10 border border-[#F59E0B]/20"
+          : "rounded-tl-sm bg-[#1E293B] border border-[#334155]/50"
+      }`}>
+        {/* Role label */}
+        <p className={`mb-1 text-[10px] font-medium uppercase tracking-wider ${
+          isUser ? "text-[#F59E0B]/60 text-right" : "text-[#F59E0B]/60"
+        }`}>
+          {isUser ? "Tú" : "Asistente Cintax"}
+        </p>
+
+        {/* Content */}
+        <div className="whitespace-pre-wrap text-[13px] leading-relaxed text-[#F8FAFC]">
+          {content}
+          {isStreaming && (
+            <motion.span
+              className="ml-0.5 inline-block h-4 w-[2px] translate-y-[2px] bg-[#F59E0B]"
+              animate={{ opacity: [1, 1, 0, 0] }}
+              transition={{ duration: 0.8, repeat: Infinity, times: [0, 0.49, 0.5, 1] }}
+            />
           )}
-        >
-          <p className="whitespace-pre-wrap text-sm leading-relaxed">
-            {content}
-            {isStreaming && (
-              <span className="ml-0.5 inline-block animate-[typing-cursor_1s_step-end_infinite] text-[#F59E0B]">
-                ▊
-              </span>
-            )}
-          </p>
         </div>
       </div>
     </motion.div>
