@@ -42,13 +42,19 @@ export default function Hero() {
   const [showContent, setShowContent] = useState(false);
   const [playerReady, setPlayerReady] = useState(false);
 
+  // Lock scroll during boot sequence
   useEffect(() => {
+    document.body.style.overflow = "hidden";
     setPlayerReady(true);
     const timer = setTimeout(() => {
       setShowContent(true);
+      document.body.style.overflow = "";
     }, BOOT_DURATION_MS);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      document.body.style.overflow = "";
+    };
   }, []);
 
   const handleProbarAgente = useCallback(() => {
@@ -88,9 +94,9 @@ export default function Hero() {
         }}
       />
 
-      {/* Remotion Boot Sequence Player */}
+      {/* Remotion Boot Sequence — fixed fullscreen overlay */}
       {!showContent && playerReady && (
-        <div className="absolute inset-0 z-20">
+        <div className="fixed inset-0 z-50 bg-background-deep">
           <RemotionPlayer
             component={HeroSequenceLazy}
             durationInFrames={120}
