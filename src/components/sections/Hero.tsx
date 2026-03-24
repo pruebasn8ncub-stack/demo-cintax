@@ -55,6 +55,7 @@ export default function Hero() {
     }, BOOT_DURATION_MS);
 
     const doneTimer = setTimeout(() => {
+      window.scrollTo(0, 0);
       setBootPhase("done");
       document.body.style.overflow = "";
     }, BOOT_DURATION_MS + 600);
